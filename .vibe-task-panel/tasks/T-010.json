@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "id": "T-010",
+  "branch": "default",
+  "requirement": "解析抽取管线",
+  "title": "先修关系推断（步骤五）",
+  "description": "LLM 基于课程清单推断课程先修关系（知识依赖）。纪律：只在知识依赖明确时建、先修课起始学期早于后续课、不得成环、通识/思政/体育/军事/素质拓展不建、每条关系带 reason。落库标记「AI 推断」虚线呈现。",
+  "acceptance": [
+    "只建知识依赖明确的关系，每条带 reason",
+    "先修课起始学期必须早于后续课",
+    "不形成环，违反学期约束/成环的关系丢弃",
+    "通识/思政/体育/军事/素质拓展不建先修",
+    "全部标记 AI 推断，实线为人工确认",
+    "reason 仅用于日志抽检，不入业务库"
+  ],
+  "status": "todo",
+  "blocked_reason": null,
+  "depends_on": [
+    "T-008"
+  ],
+  "files": [],
+  "sessions": [],
+  "changes": [],
+  "review": {
+    "verdict": "pending",
+    "check_results": {},
+    "comments": [],
+    "reviewer": null
+  },
+  "notices": [
+    {
+      "at": "2026-08-15T14:12:41.965Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 todo 变为 in_progress",
+      "read": false
+    },
+    {
+      "at": "2026-08-16T02:14:08.230Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 in_progress 变为 in_review",
+      "read": false
+    },
+    {
+      "at": "2026-08-16T02:14:26.797Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 in_review 变为 in_progress",
+      "read": false
+    }
+  ]
+}

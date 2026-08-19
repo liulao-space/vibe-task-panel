@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "id": "T-021",
+  "branch": "default",
+  "requirement": "方案详情",
+  "title": "毕业要求编辑页",
+  "description": "毕业要求增删改排序、指标点管理、支撑课程与权重。字段：要求名称（≤50）、描述（≤500）、支撑培养目标（至少1）、适用范围（公共/方向专属）。指标点描述≤300，支撑课程卡片式，权重（0,1] 两位小数，同指标点权重合计=1。校验分层：保存轻校验，确认锁定完整性校验。",
+  "acceptance": [
+    "要求/指标点增删改排序，重编号不丢支撑",
+    "每条要求至少支撑 1 个培养目标",
+    "权重单值（0,1]，同指标点合计=1，待补权重标记",
+    "支撑课程候选按归属过滤（公共要求仅公共课）",
+    "保存轻校验（必填/长度/单值越界阻断），锁定完整性校验（合计=1 等阻断）",
+    "页面离开拦截未保存修改"
+  ],
+  "status": "todo",
+  "blocked_reason": null,
+  "depends_on": [
+    "T-017"
+  ],
+  "files": [],
+  "sessions": [],
+  "changes": [],
+  "review": {
+    "verdict": "pending",
+    "check_results": {},
+    "comments": [],
+    "reviewer": null
+  },
+  "notices": [
+    {
+      "at": "2026-08-15T14:12:41.970Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 todo 变为 in_progress",
+      "read": false
+    },
+    {
+      "at": "2026-08-16T02:14:08.233Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 in_progress 变为 in_review",
+      "read": false
+    },
+    {
+      "at": "2026-08-16T02:14:26.801Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 in_review 变为 in_progress",
+      "read": false
+    }
+  ]
+}

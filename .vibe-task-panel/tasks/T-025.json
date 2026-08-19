@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "id": "T-025",
+  "branch": "default",
+  "requirement": "体系图谱",
+  "title": "课程体系先修关系图",
+  "description": "按学期分列展示课程，连线表示先修关系，节点按课程一级类别配色。拖拽建立先修箭头（校验自环/重复/循环），点击箭头二次确认删除。AI 推断虚线，人工确认实线。点击课程卡片弹窗展示字段+关联课程信息。",
+  "acceptance": [
+    "按学期分列，节点按一级类别配色",
+    "拖拽建边，自环/重复/循环校验并阻止",
+    "AI 推断虚线，人工确认实线",
+    "点击箭头二次确认删除",
+    "点击课程卡片先展示课程字段再展示关联信息+编辑入口"
+  ],
+  "status": "in_review",
+  "blocked_reason": null,
+  "depends_on": [
+    "T-010"
+  ],
+  "files": [],
+  "sessions": [],
+  "changes": [],
+  "review": {
+    "verdict": "pending",
+    "check_results": {
+      "lint": "skip",
+      "typecheck": "skip",
+      "test": "fail",
+      "acceptance": "pass",
+      "deps": "pass",
+      "files_exist": "pass"
+    },
+    "comments": [],
+    "reviewer": null,
+    "last_auto": {
+      "at": "2026-08-16T02:20:57.588Z",
+      "passed": false,
+      "summary": "自动检查未通过: test"
+    },
+    "ai": {
+      "summary": "本次任务 T-025 要求实现课程体系先修关系图，但提交中未包含任何实际代码改动或 changes 记录，仅提供了任务描述和自动检查结果（test 失败）。因此无法对代码进行实质审查，也无法确认任何验收标准是否满足。",
+      "quality": "由于未读取到实际代码，无法评估结构、命名、可维护性等。但根据任务描述，该功能涉及拖拽建边、循环校验、虚线/实线状态区分、弹窗联动等复杂交互，合理的设计应包含：基于图数据结构的边关系模型、循环检测算法（拓扑排序/DFS）、组件间状态同步（如使用状态管理库）以及可访问性处理。当前提交缺乏这些实现，质量评估无法进行。",
+      "issues": [
+        {
+          "severity": "blocker",
+          "content": "未提供任何实际代码改动和 changes 记录，代码审查完全无法开展，且任务信息中明确提示“请补充 changes 后重新运行检查”。",
+          "suggestion": "请将实际代码改动和涉及文件清单提交到任务中，再请求审查。"
+        },
+        {
+          "severity": "blocker",
+          "content": "自动检查结果为 test fail，但未给出具体失败原因或测试报告，无法判断是功能缺陷还是环境问题，这会导致审查无法确认代码可运行性。",
+          "suggestion": "补充测试失败的具体日志、失败的测试用例名称及复现步骤。"
+        },
+        {
+          "severity": "suggestion",
+          "content": "任务影响分析中“关联文件”为空，且未说明会影响哪些任务，影响范围分析不完整，可能遗漏跨模块改动。",
+          "suggestion": "检查并补充实际关联的组件、路由、接口或模块，重新评估影响范围。"
+        },
+        {
+          "severity": "suggestion",
+          "content": "根据验收标准，循环校验是核心逻辑之一，但提交中没有任何实现迹象。需要考虑性能：课程数量较多时，拖拽建边触发的循环检测不应是 O(V*E) 的暴力遍历。",
+          "suggestion": "建议采用增量拓扑排序或维护依赖关系索引，在边创建/删除时局部更新。"
+        }
+      ],
+      "acceptance_check": [
+        {
+          "criterion": "按学期分列，节点按一级类别配色",
+          "satisfied": false,
+          "note": "没有代码可供验证，无法判断是否实现按学期分列和节点一级类别配色。"
+        },
+        {
+          "criterion": "拖拽建边，自环/重复/循环校验并阻止",
+          "satisfied": false,
+          "note": "没有代码可供验证，且自动测试失败，无法确认拖拽建边及各种边界校验是否实现。"
+        },
+        {
+          "criterion": "AI 推断虚线，人工确认实线",
+          "satisfied": false,
+          "note": "没有代码可供验证，无法确认边状态（虚线/实线）和确认交互是否实现。"
+        },
+        {
+          "criterion": "点击箭头二次确认删除",
+          "satisfied": false,
+          "note": "没有代码可供验证，无法判断二次确认删除行为是否正确。"
+        },
+        {
+          "criterion": "点击课程卡片先展示课程字段再展示关联信息+编辑入口",
+          "satisfied": false,
+          "note": "没有代码可供验证，无法确认弹窗的展示顺序和内容是否满足要求。"
+        }
+      ],
+      "verdict": "reject",
+      "verdict_reason": "提交缺失实际代码与改动记录，自动测试失败且缺乏详情，无法验证任何验收标准是否满足。在补充可审查的代码、测试通过证据和关联文件之前，该任务不得通过审查。",
+      "learning": {
+        "snippets": [
+          {
+            "title": "有向图循环检测（拓扑排序）",
+            "code": "// 检测添加边后是否会形成环（从起点出发DFS模拟）\nfunction hasCycle(nodes, edges, start, end) {\n  // 复制当前邻接表\n  const adj = new Map();\n  nodes.forEach(n => adj.set(n.id, []));\n  edges.forEach(([from, to]) => adj.get(from).push(to));\n  // 加入待添加边\n  adj.get(start).push(end);\n\n  // 状态：0=未访问，1=访问中，2=已访问完成\n  const state = new Map();\n  nodes.forEach(n => state.set(n.id, 0));\n\n  function dfs(node) {\n    state.set(node, 1);\n    const neighbors = adj.get(node) || [];\n    for (const next of neighbors) {\n      if (state.get(next) === 1) return true; // 回边 = 有环\n      if (state.get(next) === 0 && dfs(next)) return true;\n    }\n    state.set(node, 2);\n    return false;\n  }\n\n  for (const n of nodes) {\n    if (state.get(n.id) === 0) {\n      if (dfs(n.id)) return true;\n    }\n  }\n  return false;\n}",
+            "note": "该算法在 O(V+E) 时间内完成检测，可以安全地用于拖拽建边时的即时校验。实际项目中可将邻接表维护在状态库中，避免每次重新构建。"
+          }
+        ],
+        "design": "该功能本质上是一个有向图编辑器，适合采用“数据驱动 + 主动查询”的架构：课程节点和边作为不可变数据源（例如 Redux/SwiftUI ObservableObject），UI 负责渲染和交互；每次建边/删边前通过纯函数（如图论工具）校验合法性，保证数据一致性。组件应拆分为课程卡片、图展示、弹窗等，并通过状态管理隔离交互，避免父组件与子组件耦合。",
+        "knowledge": "循环检测是图论中的经典问题，常用方法有拓扑排序（Kahn）和 DFS 着色法。前端实现拖拽连线时，需要注意鼠标坐标与节点坐标的转换、碰撞检测，以及 SVG/Canvas 的渲染方式。对于虚线/实线边状态，可以通过边的元数据（type: 'ai' | 'manual'）控制样式，并用一键确认操作将 type 从 'ai' 改为 'manual'。",
+        "interview_points": "面试官可能问：① 如何检测先修图中的循环依赖？答：拓扑排序，若最终节点数小于总节点数则有环，或 DFS 检查回边。② 结合 React，如何实现拖拽建边？答：鼠标事件中记录起始节点，通过 store 维护 pending 边，在释放时判断目标节点。③ 为什么需要二次确认删除？答：防止用户误操作，因为删除边可能影响整体课程依赖关系。"
+      }
+    },
+    "ai_at": "2026-08-16T02:21:35.597Z"
+  },
+  "notices": [
+    {
+      "at": "2026-08-15T14:12:41.969Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 todo 变为 in_progress",
+      "read": false
+    },
+    {
+      "at": "2026-08-16T02:14:08.232Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 in_progress 变为 in_review",
+      "read": false
+    },
+    {
+      "at": "2026-08-16T02:14:26.800Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 in_review 变为 in_progress",
+      "read": false
+    }
+  ]
+}

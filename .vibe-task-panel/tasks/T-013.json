@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "id": "T-013",
+  "branch": "default",
+  "requirement": "方案详情",
+  "title": "确认锁定与版本操作",
+  "description": "确认锁定（前置完整性校验，见待修正清单弹窗）、解除锁定（仅已确认且未生效过）、创建新版本（副本继承文件/年级/结构化内容/配置/关联/先修关系，版本序号+1）。锁定后内容只读、编辑入口置灰，课程关联与下载清单例外。",
+  "acceptance": [
+    "确认锁定前执行完整性校验，存在待修正弹「待修正项清单弹窗」",
+    "锁定后内容只读，编辑入口置灰",
+    "解除锁定仅「已确认」且未生效过，二次确认",
+    "创建新版本在三态可用，副本继承规则正确（文件沿用不重新解析）",
+    "待确认态不展示创建新版本按钮",
+    "课程关联与下载清单不受锁定影响"
+  ],
+  "status": "todo",
+  "blocked_reason": null,
+  "depends_on": [
+    "T-012"
+  ],
+  "files": [],
+  "sessions": [],
+  "changes": [],
+  "review": {
+    "verdict": "pending",
+    "check_results": {},
+    "comments": [],
+    "reviewer": null
+  },
+  "notices": [
+    {
+      "at": "2026-08-15T14:12:41.970Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 todo 变为 in_progress",
+      "read": false
+    },
+    {
+      "at": "2026-08-16T02:14:08.233Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 in_progress 变为 in_review",
+      "read": false
+    },
+    {
+      "at": "2026-08-16T02:14:26.801Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 in_review 变为 in_progress",
+      "read": false
+    }
+  ]
+}

@@ -1,0 +1,432 @@
+{
+  "schema_version": 1,
+  "requirements": [
+    {
+      "name": "需求：用户登录功能",
+      "tasks": [
+        {
+          "id": "T-001",
+          "title": "用户可用邮箱 + 密码注册。",
+          "status": "todo"
+        },
+        {
+          "id": "T-002",
+          "title": "用户可用邮箱 + 密码登录，登录后保持会话。",
+          "status": "todo"
+        },
+        {
+          "id": "T-003",
+          "title": "密码必须安全存储，不能明文入库。",
+          "status": "todo"
+        },
+        {
+          "id": "T-004",
+          "title": "登录失败要有明确提示，且需做防暴力破解限制。",
+          "status": "in_progress"
+        },
+        {
+          "id": "T-005",
+          "title": "支持退出登录。",
+          "status": "todo"
+        }
+      ]
+    },
+    {
+      "name": "解析抽取管线",
+      "tasks": [
+        {
+          "id": "T-006",
+          "title": "文档地图生成（步骤一）",
+          "status": "todo"
+        },
+        {
+          "id": "T-007",
+          "title": "文本类实体抽取（步骤二）",
+          "status": "todo"
+        },
+        {
+          "id": "T-008",
+          "title": "课程清单抽取（步骤三）",
+          "status": "todo"
+        },
+        {
+          "id": "T-009",
+          "title": "支撑权重抽取（步骤四）",
+          "status": "todo"
+        },
+        {
+          "id": "T-010",
+          "title": "先修关系推断（步骤五）",
+          "status": "todo"
+        },
+        {
+          "id": "T-011",
+          "title": "解析结果落库与失败处理",
+          "status": "todo"
+        }
+      ]
+    },
+    {
+      "name": "方案详情",
+      "tasks": [
+        {
+          "id": "T-012",
+          "title": "顶部吸顶栏与文件预览浮窗",
+          "status": "todo"
+        },
+        {
+          "id": "T-013",
+          "title": "确认锁定与版本操作",
+          "status": "todo"
+        },
+        {
+          "id": "T-014",
+          "title": "方案基础配置",
+          "status": "todo"
+        },
+        {
+          "id": "T-015",
+          "title": "方案统计概览",
+          "status": "todo"
+        },
+        {
+          "id": "T-016",
+          "title": "培养目标模块",
+          "status": "todo"
+        },
+        {
+          "id": "T-017",
+          "title": "毕业要求展示",
+          "status": "todo"
+        },
+        {
+          "id": "T-018",
+          "title": "课程清单筛选与列表",
+          "status": "todo"
+        },
+        {
+          "id": "T-019",
+          "title": "课程增删改弹窗",
+          "status": "todo"
+        },
+        {
+          "id": "T-020",
+          "title": "课程支撑指标点/关联/下载",
+          "status": "todo"
+        },
+        {
+          "id": "T-021",
+          "title": "毕业要求编辑页",
+          "status": "todo"
+        }
+      ]
+    },
+    {
+      "name": "体系图谱",
+      "tasks": [
+        {
+          "id": "T-022",
+          "title": "培养体系概览",
+          "status": "todo"
+        },
+        {
+          "id": "T-023",
+          "title": "课程结构统计",
+          "status": "todo"
+        },
+        {
+          "id": "T-024",
+          "title": "支撑矩阵",
+          "status": "in_review"
+        },
+        {
+          "id": "T-025",
+          "title": "课程体系先修关系图",
+          "status": "in_review"
+        }
+      ]
+    },
+    {
+      "name": "方案诊断",
+      "tasks": [
+        {
+          "id": "T-026",
+          "title": "方案诊断占位页",
+          "status": "todo"
+        }
+      ]
+    }
+  ],
+  "branches": [
+    "default"
+  ],
+  "tasks": [
+    {
+      "id": "T-001",
+      "requirement": "需求：用户登录功能",
+      "title": "用户可用邮箱 + 密码注册。",
+      "status": "todo",
+      "branch": "default",
+      "depends_on": []
+    },
+    {
+      "id": "T-002",
+      "requirement": "需求：用户登录功能",
+      "title": "用户可用邮箱 + 密码登录，登录后保持会话。",
+      "status": "todo",
+      "branch": "default",
+      "depends_on": [
+        "T-001"
+      ]
+    },
+    {
+      "id": "T-003",
+      "requirement": "需求：用户登录功能",
+      "title": "密码必须安全存储，不能明文入库。",
+      "status": "todo",
+      "branch": "default",
+      "depends_on": [
+        "T-002"
+      ]
+    },
+    {
+      "id": "T-004",
+      "requirement": "需求：用户登录功能",
+      "title": "登录失败要有明确提示，且需做防暴力破解限制。",
+      "status": "in_progress",
+      "branch": "default",
+      "depends_on": [
+        "T-003"
+      ]
+    },
+    {
+      "id": "T-005",
+      "requirement": "需求：用户登录功能",
+      "title": "支持退出登录。",
+      "status": "todo",
+      "branch": "default",
+      "depends_on": [
+        "T-004"
+      ]
+    },
+    {
+      "id": "T-006",
+      "requirement": "解析抽取管线",
+      "title": "文档地图生成（步骤一）",
+      "status": "todo",
+      "branch": "default",
+      "depends_on": [
+        "T-005"
+      ]
+    },
+    {
+      "id": "T-007",
+      "requirement": "解析抽取管线",
+      "title": "文本类实体抽取（步骤二）",
+      "status": "todo",
+      "branch": "default",
+      "depends_on": [
+        "T-006"
+      ]
+    },
+    {
+      "id": "T-008",
+      "requirement": "解析抽取管线",
+      "title": "课程清单抽取（步骤三）",
+      "status": "todo",
+      "branch": "default",
+      "depends_on": [
+        "T-006"
+      ]
+    },
+    {
+      "id": "T-009",
+      "requirement": "解析抽取管线",
+      "title": "支撑权重抽取（步骤四）",
+      "status": "todo",
+      "branch": "default",
+      "depends_on": [
+        "T-006",
+        "T-007",
+        "T-008"
+      ]
+    },
+    {
+      "id": "T-010",
+      "requirement": "解析抽取管线",
+      "title": "先修关系推断（步骤五）",
+      "status": "todo",
+      "branch": "default",
+      "depends_on": [
+        "T-008"
+      ]
+    },
+    {
+      "id": "T-011",
+      "requirement": "解析抽取管线",
+      "title": "解析结果落库与失败处理",
+      "status": "todo",
+      "branch": "default",
+      "depends_on": [
+        "T-007",
+        "T-008",
+        "T-009",
+        "T-010"
+      ]
+    },
+    {
+      "id": "T-012",
+      "requirement": "方案详情",
+      "title": "顶部吸顶栏与文件预览浮窗",
+      "status": "todo",
+      "branch": "default",
+      "depends_on": [
+        "T-011"
+      ]
+    },
+    {
+      "id": "T-013",
+      "requirement": "方案详情",
+      "title": "确认锁定与版本操作",
+      "status": "todo",
+      "branch": "default",
+      "depends_on": [
+        "T-012"
+      ]
+    },
+    {
+      "id": "T-014",
+      "requirement": "方案详情",
+      "title": "方案基础配置",
+      "status": "todo",
+      "branch": "default",
+      "depends_on": [
+        "T-011"
+      ]
+    },
+    {
+      "id": "T-015",
+      "requirement": "方案详情",
+      "title": "方案统计概览",
+      "status": "todo",
+      "branch": "default",
+      "depends_on": [
+        "T-011"
+      ]
+    },
+    {
+      "id": "T-016",
+      "requirement": "方案详情",
+      "title": "培养目标模块",
+      "status": "todo",
+      "branch": "default",
+      "depends_on": [
+        "T-011"
+      ]
+    },
+    {
+      "id": "T-017",
+      "requirement": "方案详情",
+      "title": "毕业要求展示",
+      "status": "todo",
+      "branch": "default",
+      "depends_on": [
+        "T-011"
+      ]
+    },
+    {
+      "id": "T-018",
+      "requirement": "方案详情",
+      "title": "课程清单筛选与列表",
+      "status": "todo",
+      "branch": "default",
+      "depends_on": [
+        "T-008"
+      ]
+    },
+    {
+      "id": "T-019",
+      "requirement": "方案详情",
+      "title": "课程增删改弹窗",
+      "status": "todo",
+      "branch": "default",
+      "depends_on": [
+        "T-018"
+      ]
+    },
+    {
+      "id": "T-020",
+      "requirement": "方案详情",
+      "title": "课程支撑指标点/关联/下载",
+      "status": "todo",
+      "branch": "default",
+      "depends_on": [
+        "T-018",
+        "T-019"
+      ]
+    },
+    {
+      "id": "T-021",
+      "requirement": "方案详情",
+      "title": "毕业要求编辑页",
+      "status": "todo",
+      "branch": "default",
+      "depends_on": [
+        "T-017"
+      ]
+    },
+    {
+      "id": "T-022",
+      "requirement": "体系图谱",
+      "title": "培养体系概览",
+      "status": "todo",
+      "branch": "default",
+      "depends_on": [
+        "T-016",
+        "T-017",
+        "T-008"
+      ]
+    },
+    {
+      "id": "T-023",
+      "requirement": "体系图谱",
+      "title": "课程结构统计",
+      "status": "todo",
+      "branch": "default",
+      "depends_on": [
+        "T-008"
+      ]
+    },
+    {
+      "id": "T-024",
+      "requirement": "体系图谱",
+      "title": "支撑矩阵",
+      "status": "in_review",
+      "branch": "default",
+      "depends_on": [
+        "T-021"
+      ]
+    },
+    {
+      "id": "T-025",
+      "requirement": "体系图谱",
+      "title": "课程体系先修关系图",
+      "status": "in_review",
+      "branch": "default",
+      "depends_on": [
+        "T-010"
+      ]
+    },
+    {
+      "id": "T-026",
+      "requirement": "方案诊断",
+      "title": "方案诊断占位页",
+      "status": "todo",
+      "branch": "default",
+      "depends_on": [
+        "T-001"
+      ]
+    }
+  ],
+  "generated_at": "2026-08-16T02:46:24.986Z"
+}

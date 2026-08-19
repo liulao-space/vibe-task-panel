@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "id": "T-024",
+  "branch": "default",
+  "requirement": "体系图谱",
+  "title": "支撑矩阵",
+  "description": "①毕业要求→培养目标支撑矩阵（只读，修改跳编辑页）；②课程→毕业要求支撑矩阵（两行表头，行=课程，单元格高/中/低或待补权重角标）；③权重区间设置弹窗（T1/T2 阈值，默认 0.50/0.80，0<T1<T2<1）。",
+  "acceptance": [
+    "要求→目标矩阵只读，右上角修改跳转",
+    "课程→要求矩阵两行表头（上合并毕业要求，下指标点序号）",
+    "权重空单元格高/中/低+红色角标，悬浮待补权重",
+    "权重区间 T1=0.50 T2=0.80，0<T1<T2<1，保存后全局重算",
+    "待补权重提示行，点击去补填跳转"
+  ],
+  "status": "in_review",
+  "blocked_reason": null,
+  "depends_on": [
+    "T-021"
+  ],
+  "files": [],
+  "sessions": [],
+  "changes": [],
+  "review": {
+    "verdict": "pending",
+    "check_results": {
+      "lint": "skip",
+      "typecheck": "skip",
+      "test": "fail",
+      "acceptance": "pass",
+      "deps": "pass",
+      "files_exist": "pass"
+    },
+    "comments": [],
+    "reviewer": null,
+    "last_auto": {
+      "at": "2026-08-16T02:46:07.707Z",
+      "passed": false,
+      "summary": "自动检查未通过: test"
+    },
+    "ai": {
+      "summary": "本次任务无实际代码改动记录，自动测试失败，无法进行实质审查。需补充具体代码改动与测试修复后才能继续。",
+      "quality": "因缺少实际代码，无法评估结构、命名、可维护性、边界处理与安全性。当前状态不符合可审查要求。",
+      "issues": [
+        {
+          "severity": "blocker",
+          "content": "未提供任何代码改动记录，且自动测试未通过，审查无法基于实际实现进行",
+          "suggestion": "请补充完整的代码改动（diff 或新文件内容），并确保测试通过后重新提交审查"
+        }
+      ],
+      "acceptance_check": [
+        {
+          "criterion": "要求→目标矩阵只读，右上角修改跳转",
+          "satisfied": false,
+          "note": "无代码，无法验证"
+        },
+        {
+          "criterion": "课程→要求矩阵两行表头（上合并毕业要求，下指标点序号）",
+          "satisfied": false,
+          "note": "无代码，无法验证"
+        },
+        {
+          "criterion": "权重空单元格高/中/低+红色角标，悬浮待补权重",
+          "satisfied": false,
+          "note": "无代码，无法验证"
+        },
+        {
+          "criterion": "权重区间 T1=0.50 T2=0.80，0<T1<T2<1，保存后全局重算",
+          "satisfied": false,
+          "note": "无代码，无法验证"
+        },
+        {
+          "criterion": "待补权重提示行，点击去补填跳转",
+          "satisfied": false,
+          "note": "无代码，无法验证"
+        }
+      ],
+      "verdict": "reject",
+      "verdict_reason": "缺失代码改动和测试通过数据，无法满足任何验收标准，需补充后方可重新审查",
+      "learning": {
+        "snippets": [
+          {
+            "title": "两行表头矩阵（React + Ant Design）",
+            "code": "// 使用 column.children 实现两级表头\nconst columns = [\n  {\n    title: '毕业要求',\n    children: [\n      { title: '指标点1', dataIndex: 'point1' },\n      { title: '指标点2', dataIndex: 'point2' },\n    ],\n  },\n];\n// 支撑强度渲染：红角标 + 悬浮提示\nconst renderWeight = (value) => {\n  const level = value ? '高/中/低' : '待补';\n  return (\n    <Tooltip title={value ? `权重: ${value}` : '请补填权重'}>\n      <span style={{ position: 'relative' }}>\n        {level}\n        {!value && <Badge dot color=\"red\" style={{ position: 'absolute', top: 0, right: -8 }} />}\n      </span>\n    </Tooltip>\n  );\n};",
+            "note": "利用 antd Table 的 children 实现两行表头，用 Badge 实现红色角标，Tooltip 实现悬浮提示，清晰且符合设计规范。"
+          },
+          {
+            "title": "权重区间校验与全局重算逻辑",
+            "code": "const validateThreshold = (t1, t2) => {\n  if (t1 <= 0 || t2 >= 1 || t1 >= t2) {\n    throw new Error('阈值需满足 0 < T1 < T2 < 1');\n  }\n  // 保存后触发重新计算所有支撑权重\n  recalcAllWeights({ low: t1, high: t2 });\n};",
+            "note": "边界校验明确，且保存后调用重算函数，保证全局数据一致性。"
+          }
+        ],
+        "design": "该功能涉及矩阵型数据展示与交互，适合采用“容器组件（页面级）+ 展示组件（表格/弹窗）”的分层设计。状态管理可使用 Context 或 Redux 统一管理阈值和矩阵数据，避免 props 深层传递。重算逻辑应设计为纯函数，便于测试和复用。",
+        "knowledge": "1. 表格复杂表头：Ant Design Table 的 column.children 支持嵌套，但需注意 dataIndex 对应数据的层级。2. 受控组件与表单验证：弹窗中的阈值输入需实时校验并反馈错误。3. 全局状态更新后触发重算：应使用 useEffect 或副作用监听阈值变化，但需防抖避免频繁计算。4. 只读/编辑切换：通过路由跳转或状态控制，确保只读时不可修改数据。",
+        "interview_points": "面试官可能问：① 如何实现动态多级表头并保证数据映射正确？答：利用 column.children 递归渲染，数据按平铺结构存储，通过 children 的 dataIndex 组合访问。② 权重区间修改后如何触发全局重算，且不阻塞 UI？答：使用 useCallback 包装重算函数，在保存成功后调用，可结合 Web Worker 或 requestIdleCallback 优化大量数据计算。③ 如何确保阈值校验的实时性和用户友好？答：使用 Form 组件的 validator 进行即时校验，并给出具体错误提示；保存前再次校验防止非法值提交。"
+      }
+    },
+    "ai_at": "2026-08-16T02:46:24.979Z"
+  },
+  "notices": [
+    {
+      "at": "2026-08-15T14:12:41.970Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 todo 变为 in_progress",
+      "read": false
+    },
+    {
+      "at": "2026-08-16T02:14:08.233Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 in_progress 变为 in_review",
+      "read": false
+    },
+    {
+      "at": "2026-08-16T02:14:26.801Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 in_review 变为 in_progress",
+      "read": false
+    }
+  ]
+}

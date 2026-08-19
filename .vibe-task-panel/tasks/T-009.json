@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "id": "T-009",
+  "branch": "default",
+  "requirement": "解析抽取管线",
+  "title": "支撑权重抽取（步骤四）",
+  "description": "LLM 抽取课程→毕业要求指标点支撑关系及权重。权重矩阵 source=weight_table，关联度矩阵（H/M/L）source=correlation_matrix 且 weight 填 null。H/M/L 归一化为高/中/低入库，不折算数值。unmatched 指标点/课程不入库。",
+  "acceptance": [
+    "只使用给定指标点编号与课程名，不自行新建",
+    "H/M/L 不折算数值，weight 填 null，level_raw 留原文",
+    "数值权重矩阵 weight 原样 0~1 小数",
+    "同一条关系两张矩阵都出现时优先取数值权重，只输出一条",
+    "level_raw 归一化高/中/低，无法归一仅保留支撑关系",
+    "unmatched 关系不入库，写解析日志",
+    "count_in_achievement 入库留存（v1 不展示）"
+  ],
+  "status": "todo",
+  "blocked_reason": null,
+  "depends_on": [
+    "T-006",
+    "T-007",
+    "T-008"
+  ],
+  "files": [],
+  "sessions": [],
+  "changes": [],
+  "review": {
+    "verdict": "pending",
+    "check_results": {},
+    "comments": [],
+    "reviewer": null
+  },
+  "notices": [
+    {
+      "at": "2026-08-15T14:12:41.965Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 todo 变为 in_progress",
+      "read": false
+    },
+    {
+      "at": "2026-08-16T02:14:08.229Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 in_progress 变为 in_review",
+      "read": false
+    },
+    {
+      "at": "2026-08-16T02:14:26.797Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 in_review 变为 in_progress",
+      "read": false
+    }
+  ]
+}

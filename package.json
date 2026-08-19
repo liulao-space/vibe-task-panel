@@ -1,0 +1,48 @@
+{
+  "name": "vibe-task-panel",
+  "version": "0.1.0",
+  "description": "面向 Vibe Coding 的 Agent 任务管理面板：需求拆解 / 任务看板 / 依赖影响分析 / Code Review / MCP 接入",
+  "type": "module",
+  "license": "MIT",
+  "keywords": [
+    "vibe-coding",
+    "task-management",
+    "agent",
+    "mcp",
+    "opencode",
+    "kanban",
+    "ai"
+  ],
+  "bin": {
+    "vibe-task-panel": "./src/cli/cli.mjs",
+    "decompose": "./src/cli/decompose.mjs",
+    "task-panel": "./src/cli/task-panel.mjs"
+  },
+  "files": [
+    "src",
+    "web",
+    "specs",
+    "docs",
+    "scripts",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "decompose": "node src/cli/cli.mjs decompose",
+    "task-panel": "node src/cli/cli.mjs task-panel",
+    "server": "node src/server/server.mjs",
+    "test": "node --test test/",
+    "prepublishOnly": "node --test test/"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YOUR-GITHUB-USERNAME/vibe-task-panel.git"
+  },
+  "homepage": "https://github.com/YOUR-GITHUB-USERNAME/vibe-task-panel#readme",
+  "bugs": {
+    "url": "https://github.com/YOUR-GITHUB-USERNAME/vibe-task-panel/issues"
+  }
+}

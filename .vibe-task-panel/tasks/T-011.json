@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "id": "T-011",
+  "branch": "default",
+  "requirement": "解析抽取管线",
+  "title": "解析结果落库与失败处理",
+  "description": "解析成功数据以待确认入库。单步失败不阻断其余步骤。失败判定（任一）：①文档解析失败或 <500 字符；②步骤一未识别到 include=true 章节；③步骤二与三均无产出。失败可重试（从步骤零），重试二次确认覆盖，锁定版本不提供重试。",
+  "acceptance": [
+    "解析成功以待确认入库",
+    "单步无产出对应模块空态，不阻断其他步骤",
+    "失败判定三条件正确",
+    "重试二次确认「重试将以新的解析结果覆盖当前全部内容」",
+    "锁定版本不提供重试入口",
+    "仅缺指标点/支撑矩阵/专业方向不判失败"
+  ],
+  "status": "todo",
+  "blocked_reason": null,
+  "depends_on": [
+    "T-007",
+    "T-008",
+    "T-009",
+    "T-010"
+  ],
+  "files": [],
+  "sessions": [],
+  "changes": [],
+  "review": {
+    "verdict": "pending",
+    "check_results": {},
+    "comments": [],
+    "reviewer": null
+  },
+  "notices": [
+    {
+      "at": "2026-08-15T14:12:41.965Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 todo 变为 in_progress",
+      "read": false
+    },
+    {
+      "at": "2026-08-16T02:14:08.229Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 in_progress 变为 in_review",
+      "read": false
+    },
+    {
+      "at": "2026-08-16T02:14:26.797Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 in_review 变为 in_progress",
+      "read": false
+    }
+  ]
+}

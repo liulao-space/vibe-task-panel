@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "id": "T-003",
+  "branch": "default",
+  "requirement": "需求：用户登录功能",
+  "title": "密码必须安全存储，不能明文入库。",
+  "description": "来自文档章节: 需求描述",
+  "acceptance": [],
+  "status": "todo",
+  "blocked_reason": null,
+  "depends_on": [
+    "T-002"
+  ],
+  "files": [],
+  "sessions": [],
+  "changes": [],
+  "review": {
+    "verdict": "pending",
+    "check_results": {},
+    "comments": [],
+    "reviewer": null
+  }
+}

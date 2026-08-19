@@ -1,0 +1,194 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Task",
+  "type": "object",
+  "required": [
+    "id",
+    "requirement",
+    "title",
+    "status"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "default": 1,
+      "description": "存储格式版本，便于演进"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^T-\\d{3,}$",
+      "description": "任务唯一 ID，如 T-001"
+    },
+    "requirement": {
+      "type": "string",
+      "description": "所属需求名称"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string",
+      "default": ""
+    },
+    "acceptance": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "验收标准"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "todo",
+        "in_progress",
+        "in_review",
+        "done",
+        "blocked"
+      ],
+      "default": "todo"
+    },
+    "blocked_reason": {
+      "type": "string",
+      "description": "status=blocked 时的原因"
+    },
+    "depends_on": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "依赖的任务 ID 列表（本任务依赖谁）"
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "关联文件路径"
+    },
+    "assignee": {
+      "type": ["string", "null"],
+      "default": null,
+      "description": "负责人（@提醒对象）"
+    },
+    "comments": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "properties": {
+          "author": { "type": "string" },
+          "at": { "type": "string", "format": "date-time" },
+          "content": { "type": "string" }
+        }
+      },
+      "description": "任务评论（支持 @ 提醒）"
+    },
+    "notices": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "properties": {
+          "at": { "type": "string", "format": "date-time" },
+          "kind": { "type": "string", "enum": ["dependency_changed", "mention"] },
+          "from": { "type": "string" },
+          "message": { "type": "string" },
+          "read": { "type": "boolean", "default": false }
+        }
+      },
+      "description": "下游变更 / 被 @ 提醒"
+    },
+    "sessions": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "properties": {
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "assistant",
+              "system"
+            ]
+          },
+          "summary": {
+            "type": "string"
+          },
+          "decision": {
+            "type": "string",
+            "description": "关键决策，可选"
+          }
+        }
+      }
+    },
+    "changes": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "properties": {
+          "commit": {
+            "type": "string"
+          },
+          "file_paths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "diff_summary": {
+            "type": "string"
+          },
+          "rationale": {
+            "type": "string",
+            "description": "为什么这么改"
+          }
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "default": {
+        "verdict": "pending",
+        "check_results": {},
+        "comments": [],
+        "reviewer": null
+      },
+      "properties": {
+        "verdict": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "passed",
+            "rejected"
+          ]
+        },
+        "check_results": {
+          "type": "object",
+          "description": "lint/typecheck/test 等自动检查结果"
+        },
+        "comments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "reviewer": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

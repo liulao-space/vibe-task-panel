@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "id": "T-002",
+  "branch": "default",
+  "requirement": "需求：用户登录功能",
+  "title": "用户可用邮箱 + 密码登录，登录后保持会话。",
+  "description": "来自文档章节: 需求描述",
+  "acceptance": [
+    "退出后会话失效。"
+  ],
+  "status": "todo",
+  "blocked_reason": null,
+  "depends_on": [
+    "T-001"
+  ],
+  "files": [],
+  "sessions": [],
+  "changes": [],
+  "review": {
+    "verdict": "pending",
+    "check_results": {},
+    "comments": [],
+    "reviewer": null
+  }
+}

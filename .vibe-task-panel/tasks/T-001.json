@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "id": "T-001",
+  "branch": "default",
+  "requirement": "需求：用户登录功能",
+  "title": "用户可用邮箱 + 密码注册。",
+  "description": "来自文档章节: 需求描述",
+  "acceptance": [
+    "注册后能立即登录。",
+    "密码存储使用 bcrypt 哈希。"
+  ],
+  "status": "todo",
+  "blocked_reason": null,
+  "depends_on": [],
+  "files": [],
+  "sessions": [],
+  "changes": [],
+  "review": {
+    "verdict": "pending",
+    "check_results": {},
+    "comments": [],
+    "reviewer": null
+  }
+}

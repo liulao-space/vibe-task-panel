@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "id": "T-026",
+  "branch": "default",
+  "requirement": "方案诊断",
+  "title": "方案诊断占位页",
+  "description": "本期仅保留入口与占位，Tab 展示「开发中」空态。方案版本列表「方案诊断」操作与 Tab 均指向占位页。实际诊断功能为 v2。",
+  "acceptance": [
+    "Tab 展示「开发中」占位空态",
+    "列表「方案诊断」操作指向占位页",
+    "解析失败态下方案诊断操作仍启用"
+  ],
+  "status": "todo",
+  "blocked_reason": null,
+  "depends_on": [
+    "T-001"
+  ],
+  "files": [],
+  "sessions": [],
+  "changes": [],
+  "review": {
+    "verdict": "pending",
+    "check_results": {},
+    "comments": [],
+    "reviewer": null
+  }
+}

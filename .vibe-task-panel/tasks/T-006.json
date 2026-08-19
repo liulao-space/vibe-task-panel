@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "id": "T-006",
+  "branch": "default",
+  "requirement": "解析抽取管线",
+  "title": "文档地图生成（步骤一）",
+  "description": "LLM 基于文档骨架（标题+表名表头+段落首句）产出文档地图：章节索引、内容类型（content_type 枚举）、纳入/排除标记（include/exclude_reason）、定位串（locator）。排除：辅修/双学位/换修表/教学进程表/认证标准占比/第二课堂/制度引用。",
+  "acceptance": [
+    "content_type 按枚举（basic_info/training_objective/graduation_requirement/requirement_indicator/objective_support/major_direction/course_plan/credit_distribution/support_weight_matrix/correlation_matrix/prerequisite_graph/other）",
+    "辅修/换修等干扰章节标 false 并给 exclude_reason",
+    "locator 定位串与骨架文字完全一致",
+    "地图结果落库留存（不展示），未识别到 include=true 章节判失败"
+  ],
+  "status": "todo",
+  "blocked_reason": null,
+  "depends_on": [
+    "T-005"
+  ],
+  "files": [],
+  "sessions": [],
+  "changes": [],
+  "review": {
+    "verdict": "pending",
+    "check_results": {},
+    "comments": [],
+    "reviewer": null
+  },
+  "notices": [
+    {
+      "at": "2026-08-15T14:12:41.964Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 todo 变为 in_progress",
+      "read": false
+    },
+    {
+      "at": "2026-08-16T02:14:08.228Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 in_progress 变为 in_review",
+      "read": false
+    },
+    {
+      "at": "2026-08-16T02:14:26.796Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 in_review 变为 in_progress",
+      "read": false
+    }
+  ]
+}

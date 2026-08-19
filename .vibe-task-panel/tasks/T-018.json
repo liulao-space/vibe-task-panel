@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "id": "T-018",
+  "branch": "default",
+  "requirement": "方案详情",
+  "title": "课程清单筛选与列表",
+  "description": "筛选：课程名称/编码、课程类别（一级）、性质、开课学期、开课学院，AND 关系。列表字段：课程名/标签、编码、类别（待补类别红色）、性质、学分、学时、开课学期（待补学期红色）、考核、学院、支撑指标点。",
+  "acceptance": [
+    "筛选项 AND，x 学期限 = max(学制×2, 解析最大学期) 上限12",
+    "跨学期筛选命中 起始≤N≤结束",
+    "未映射类别红色「待补类别」，未给学期红色「待补学期」",
+    "未支撑指标点课程灰色「未支撑指标点」",
+    "学时列悬浮展示构成项明细，不提供排序"
+  ],
+  "status": "todo",
+  "blocked_reason": null,
+  "depends_on": [
+    "T-008"
+  ],
+  "files": [],
+  "sessions": [],
+  "changes": [],
+  "review": {
+    "verdict": "pending",
+    "check_results": {},
+    "comments": [],
+    "reviewer": null
+  },
+  "notices": [
+    {
+      "at": "2026-08-15T14:12:41.966Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 todo 变为 in_progress",
+      "read": false
+    },
+    {
+      "at": "2026-08-16T02:14:08.230Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 in_progress 变为 in_review",
+      "read": false
+    },
+    {
+      "at": "2026-08-16T02:14:26.798Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 in_review 变为 in_progress",
+      "read": false
+    }
+  ]
+}

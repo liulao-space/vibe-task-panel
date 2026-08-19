@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "id": "T-004",
+  "branch": "default",
+  "requirement": "需求：用户登录功能",
+  "title": "登录失败要有明确提示，且需做防暴力破解限制。",
+  "description": "来自文档章节: 需求描述",
+  "acceptance": [
+    "连续 5 次登录失败后锁定 15 分钟。"
+  ],
+  "status": "in_progress",
+  "blocked_reason": null,
+  "depends_on": [
+    "T-003"
+  ],
+  "files": [],
+  "sessions": [],
+  "changes": [],
+  "review": {
+    "verdict": "pending",
+    "check_results": {
+      "lint": "skip",
+      "typecheck": "skip",
+      "test": "fail",
+      "acceptance": "pass",
+      "deps": "pass",
+      "files_exist": "pass"
+    },
+    "comments": [],
+    "reviewer": null,
+    "last_auto": {
+      "at": "2026-08-16T02:14:08.220Z",
+      "passed": false,
+      "summary": "自动检查未通过: test"
+    },
+    "ai": {
+      "summary": "本次任务未提供任何代码改动记录，无法进行实质审查。自动检查（test）未通过，表明现有代码存在测试失败问题，且未针对防暴力破解功能进行实现或验证。",
+      "quality": "无实际代码可评估。但从任务影响分析看，涉及21个关联任务且7个高风险，说明该功能改动范围大、风险高，需谨慎实现。当前缺少改动记录，代码质量无从判断。",
+      "issues": [
+        {
+          "severity": "blocker",
+          "content": "改动记录为空，未提交任何代码或变更文件，无法审查具体实现。",
+          "suggestion": "请补充该任务对应的代码改动（至少包含登录失败计数、锁定状态管理、计时器逻辑以及对应的UI提示），并确保通过测试后重新提交审查。"
+        },
+        {
+          "severity": "blocker",
+          "content": "自动检查项中test未通过，表明现有测试套件失败，可能影响功能稳定性。",
+          "suggestion": "修复测试失败问题，并针对防暴力破解逻辑编写新增单元测试（如连续5次失败后锁定，15分钟后解锁，失败次数重置等场景）。"
+        },
+        {
+          "severity": "suggestion",
+          "content": "虽未读取到代码，但建议实现时注意锁定状态存储（可选用服务端session或本地缓存），并明确锁定期间登录界面的提示信息。",
+          "suggestion": "设计清晰的错误码与前端提示文案，例如“账户因多次登录失败被锁定，请15分钟后再试”。"
+        }
+      ],
+      "acceptance_check": [
+        {
+          "criterion": "连续 5 次登录失败后锁定 15 分钟。",
+          "satisfied": false,
+          "note": "无代码改动可验证，自动测试失败，且未提供任何实现证据，不满足验收标准。"
+        }
+      ],
+      "verdict": "reject",
+      "verdict_reason": "由于未提供实际代码改动，且自动检查未通过（test失败），无法确认验收标准是否实现。任务状态不完整，必须补充代码并通过测试后方可再次审查。",
+      "learning": {
+        "snippets": [
+          {
+            "title": "防暴力破解状态管理示例（前端配合后端）",
+            "code": "// 推荐：将失败次数和锁定时间存储在服务端，前端仅做展示和请求\nconst loginAttempt = async (username, password) => {\n  const res = await api.login({ username, password });\n  if (res.code === 'ACCOUNT_LOCKED') {\n    const remaining = Math.ceil((res.lockUntil - Date.now()) / 60000);\n    showError(`账户已锁定，请${remaining}分钟后重试`);\n    return;\n  }\n  // 处理其他错误\n};\n\n// 若前端需临时缓存失败次数（仅作辅助提示），使用localStorage并配合时间戳\nconst STORAGE_KEY = 'login_failures';\nconst MAX_ATTEMPTS = 5;\nconst LOCK_DURATION = 15 * 60 * 1000;\n\nfunction getFailureInfo(username) {\n  const key = `${STORAGE_KEY}_${username}`;\n  const data = JSON.parse(localStorage.getItem(key) || '{}');\n  if (data.count >= MAX_ATTEMPTS && Date.now() - data.firstFailTime < LOCK_DURATION) {\n    return { locked: true, remaining: Math.ceil((LOCK_DURATION - (Date.now() - data.firstFailTime)) / 60000) };\n  }\n  return { locked: false };\n}",
+            "note": "实际防暴力破解应依赖服务端，前端存储仅用于优化交互体验。代码包含时间窗口计算和剩余时间提示，便于提升用户体验。"
+          }
+        ],
+        "design": "防暴力破解通常采用服务端集中管理登录失败计数与锁定状态，保证分布式环境下的一致性。前端仅负责展示错误信息和联动UI（如禁用登录按钮、显示倒计时）。设计上应遵循“安全决策在服务端”的原则，前端数据仅作辅助展示，不可信任。",
+        "knowledge": "涉及前端防暴力破解的常见策略：1. 前端限制提交频率（防刷）；2. 显示剩余尝试次数；3. 锁定期间禁用按钮并显示倒计时；4. 注意本地存储的清理与同步问题。关键知识点包括localStorage/sessionStorage使用、计时器管理（setTimeout/clearTimeout）、以及请求错误处理。",
+        "interview_points": "面试官可能问：1. 如何实现登录失败5次锁定15分钟？（答：服务端记录失败次数和首次失败时间，每次失败检查计数和窗口；前端配合提示和禁用交互）2. 如果用户更换设备或清空缓存，如何保证锁定的有效性？（答：锁定状态应由服务端存储，基于用户账户而非设备，因此不受前端缓存影响）3. 如何防止恶意攻击绕过前端限制？（答：所有校验在服务端执行，前端仅做UI反馈；可增加验证码、IP限流等辅助措施。）"
+      }
+    },
+    "ai_at": "2026-08-16T02:23:45.418Z"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "id": "T-019",
+  "branch": "default",
+  "requirement": "方案详情",
+  "title": "课程增删改弹窗",
+  "description": "课程字段：名称（必填≤60）、编码（选填≤30 不可重复）、类别（一二级联动）、性质（必修/限选/选修）、学院、开课学期（含跨学期区间）、考核、课程归属（公共/方向专属+方向）、学分学时（多方向规则、学时/周单位）。删除校验引用完整性。",
+  "acceptance": [
+    "名称必填≤60，编码选填≤30 方案内不可重复",
+    "类别一二级联动，性质三值",
+    "开课学期支持跨学期，结束≥起始",
+    "多方向学分学时：一致开关/分 Tab，各方向单位共用",
+    "删除被引用课程二次确认并移除支撑",
+    "公共课删除额外提示「将从全部专业方向移除」"
+  ],
+  "status": "todo",
+  "blocked_reason": null,
+  "depends_on": [
+    "T-018"
+  ],
+  "files": [],
+  "sessions": [],
+  "changes": [],
+  "review": {
+    "verdict": "pending",
+    "check_results": {},
+    "comments": [],
+    "reviewer": null
+  },
+  "notices": [
+    {
+      "at": "2026-08-15T14:12:41.969Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 todo 变为 in_progress",
+      "read": false
+    },
+    {
+      "at": "2026-08-16T02:14:08.232Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 in_progress 变为 in_review",
+      "read": false
+    },
+    {
+      "at": "2026-08-16T02:14:26.800Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 in_review 变为 in_progress",
+      "read": false
+    }
+  ]
+}

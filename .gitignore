@@ -1,0 +1,7 @@
+node_modules/
+*.log
+.DS_Store
+.env
+.vibe-task-panel/.env
+# 发布时默认不提交开发过程中的截图/回看附件
+.vibe-task-panel/notes/

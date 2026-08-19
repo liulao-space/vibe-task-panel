@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "id": "T-012",
+  "branch": "default",
+  "requirement": "方案详情",
+  "title": "顶部吸顶栏与文件预览浮窗",
+  "description": "吸顶栏：方案切换（列表弹窗）、方案文件（点击预览浮窗）、方案确认状态、确认锁定/创建新版本按钮、方案基础配置入口。文件预览浮窗：拖拽移动、缩放、拉边框改变大小、内容自适应。",
+  "acceptance": [
+    "吸顶栏从左到右：方案切换/文件/确认状态/按钮/基础配置",
+    "预览浮窗支持拖拽、缩放、拉边框改大小",
+    "方案切换弹窗排序与版本列表一致",
+    "方案基础配置展开三子项：专业方向/课时构成/周学时折算"
+  ],
+  "status": "todo",
+  "blocked_reason": null,
+  "depends_on": [
+    "T-011"
+  ],
+  "files": [],
+  "sessions": [],
+  "changes": [],
+  "review": {
+    "verdict": "pending",
+    "check_results": {},
+    "comments": [],
+    "reviewer": null
+  },
+  "notices": [
+    {
+      "at": "2026-08-15T14:12:41.967Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 todo 变为 in_progress",
+      "read": false
+    },
+    {
+      "at": "2026-08-16T02:14:08.231Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 in_progress 变为 in_review",
+      "read": false
+    },
+    {
+      "at": "2026-08-16T02:14:26.799Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 in_review 变为 in_progress",
+      "read": false
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "id": "T-007",
+  "branch": "default",
+  "requirement": "解析抽取管线",
+  "title": "文本类实体抽取（步骤二）",
+  "description": "LLM 按地图截取文本章节，抽取：方案基本信息、培养目标、毕业要求、毕业要求指标点、专业方向、毕业要求→培养目标支撑关系。抽取纪律：只抽明确写出的内容、不推断不补全、找不到填 null、指标点不按句号拆分。",
+  "acceptance": [
+    "基本信息/培养目标/毕业要求/指标点/专业方向/要求→目标支撑正确抽取",
+    "专业方向判定：只有分流方向才算，课程类别/模块不算",
+    "支撑关系只抽明确给出的，禁止语义自匹配",
+    "找不到字段填 null 不编造",
+    "周学时折算说明写入 week_hour_ratio"
+  ],
+  "status": "todo",
+  "blocked_reason": null,
+  "depends_on": [
+    "T-006"
+  ],
+  "files": [],
+  "sessions": [],
+  "changes": [],
+  "review": {
+    "verdict": "pending",
+    "check_results": {},
+    "comments": [],
+    "reviewer": null
+  },
+  "notices": [
+    {
+      "at": "2026-08-15T14:12:41.964Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 todo 变为 in_progress",
+      "read": false
+    },
+    {
+      "at": "2026-08-16T02:14:08.228Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 in_progress 变为 in_review",
+      "read": false
+    },
+    {
+      "at": "2026-08-16T02:14:26.796Z",
+      "kind": "dependency_changed",
+      "from": "T-004",
+      "message": "上游任务 T-004 变化：状态从 in_review 变为 in_progress",
+      "read": false
+    }
+  ]
+}
