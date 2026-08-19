@@ -1,161 +1,426 @@
-# Vibe Task Panel
+<p align="center">
+  <img src="web/logo-mark.svg" width="72" height="72" alt="Vibe Task Panel">
+</p>
 
-面向 Vibe Coding / AI 结对开发的 Agent 任务管理面板。把 AI 开发中的「需求 → 任务 → 改动 → 回顾 → 审查」沉淀成结构化数据与可视化面板。
+<h1 align="center">Vibe Task Panel</h1>
+<p align="center">
+  <strong>面向 Vibe Coding / AI 结对开发的 Agent 任务管理面板</strong>
+  <br>
+  零依赖 · 文件存储 · 可追溯 · 可接入 AI
+</p>
 
-## 核心能力
+<p align="center">
+  <a href="#quick-start"><b>快速开始</b></a> ·
+  <a href="#workflow"><b>工作流</b></a> ·
+  <a href="#cli"><b>CLI</b></a> ·
+  <a href="#api"><b>HTTP API</b></a> ·
+  <a href="#mcp"><b>MCP</b></a> ·
+  <a href="#opencode"><b>AI 集成</b></a> ·
+  <a href="#install"><b>安装</b></a>
+</p>
 
-- 需求拆解：丢一份需求文档，自动拆成最小任务单元 + 依赖建议
-- 任务管理：按需求分类（可建/改/删需求）、状态机流转、看板 / 列表 / 依赖图三种视图
-- 多维度筛选：按需求 / 状态 / 依赖 / 文件 / 搜索（标题、描述、验收、改动内容）
-- 依赖影响分析：改动任务 A，自动找出受影响的下游任务 B、C 及共享文件，风险排序 + 回归测试建议
-- 上下文回顾 + 回看模式：每个任务记录会话摘要、改动记录、关键决策，按时间轴还原
-- Code Review：每个任务必经「自动 lint/typecheck/test + AI 审查 + 人工确认」门禁才能完成
-- AI 执行：调用 AI（多供应商自动切换）执行任务并回填会话/改动记录
-- 协作：任务指派、评论、@ 提醒；上游任务变更自动提醒下游
-- 写入时成环校验：依赖成环写入被直接拒绝
+---
 
-## 快速开始
+## 概述
 
-环境要求：Node.js >= 18（零外部依赖，无需 npm install）
+Vibe Task Panel 把 AI 开发中的「需求 → 拆解 → 实现 → 审查 → 回顾」沉淀成**结构化数据与可视化面板**，解决 AI 结对开发中的四个痛点：
 
-    # 1. 把需求文档放进 docs/（已内置示例 docs/需求.md）
-    # 2. 拆解需求 -> 生成任务
-    node src/cli/decompose.mjs docs/需求.md
+| 痛点 | 解决 |
+|------|------|
+| 需求散落在对话里，关掉就丢 | 需求文档 → 结构化任务，随代码进 Git |
+| 事后无法回溯"为什么这么改" | 每个任务记录会话摘要、决策日志、改动 diff |
+| 改 A 影响 B、C 却不可见 | 依赖图 + 影响分析（传递闭包 + 风险排序） |
+| 缺乏统一质量门禁 | 每任务自动 lint/typecheck/test + AI 审查 + 人工确认 |
 
-    # 3. 启动并打开任务面板（浏览器访问 http://127.0.0.1:4317）
-    node src/cli/task-panel.mjs
+---
 
-    # 或通过统一入口
-    node src/cli/cli.mjs decompose docs/需求.md
-    node src/cli/cli.mjs task-panel
-    node src/cli/cli.mjs server
+## <a id="quick-start"></a>快速开始
 
-端口默认 4317，可用环境变量 VTP_PORT 覆盖；项目根可用 VTP_ROOT 覆盖（默认当前目录）。
+环境要求：**Node.js >= 18**（零外部依赖，无需 npm install）
 
-## 目录结构
+```bash
+# 1. 克隆或下载本项目
+git clone https://github.com/liulao-space/vibe-task-panel.git
+cd vibe-task-panel
 
-    vibe-task-panel/
-    ├── src/
-    │   ├── core/          核心逻辑（无依赖，纯函数）
-    │   │   ├── store.mjs      任务读写 / 索引 / 需求分组 / 下游提醒
-    │   │   ├── status.mjs     状态机（含 review 门禁约束）
-    │   │   ├── deps.mjs       依赖校验 / 成环检测 / 拓扑排序
-    │   │   ├── impact.mjs     影响分析（传递闭包 + 共享文件 + 风险排序）
-    │   │   ├── review.mjs     code review 门禁（lint/typecheck/test + AI 审查）
-    │   │   ├── execute.mjs    AI 执行任务并回填（多供应商）
-    │   │   └── decompose.mjs  需求文档 -> 任务（启发式，可插拔 LLM）
-    │   ├── cli/           命令入口（decompose / task-panel / server）
-    │   ├── server/        HTTP API + 静态文件服务
-    │   └── mcp/           MCP server（opencode AI 直连）
-    ├── web/index.html     前端面板（单文件，零依赖，SVG 依赖图）
-    ├── test/              单元测试（node:test）
-    ├── specs/task-schema.json   任务数据契约
-    ├── .vibe-task-panel/  运行时数据（tasks/ 任务 + index.json + requirements.json）
-    └── docs/              需求文档（拆解输入）
+# 2. 拆解需求文档为任务（已内置示例 docs/需求.md）
+node src/cli/decompose.mjs docs/需求.md
 
-## 数据存储
+# 3. 启动任务面板，浏览器打开 http://127.0.0.1:4317
+node src/cli/task-panel.mjs
+```
 
-任务数据存于 .vibe-task-panel/tasks/ 目录：每个任务一个 <id>.json 文件（权威数据），index.json 为聚合索引，requirements.json 为需求清单。数据随代码进 Git，天然可追溯、可回看。
+> 端口默认 4317，用 `VTP_PORT=8080 node src/cli/task-panel.mjs` 可覆盖。
+> 项目根（.vibe-task-panel 所在目录）默认当前目录，用 `VTP_ROOT` 可指向任意项目。
 
-任务字段：id / requirement / title / description / acceptance / status / blocked_reason / depends_on / files / sessions / changes / assignee / comments / notices / review
+### 第一次使用指南
 
-状态机：待办 -> 进行中 -> 待审查 -> 已完成，另支持「阻塞」。已完成前必须通过 code review；进入「待审查」自动跑 lint/typecheck/test 并回填 check_results；依赖成环写入被直接拒绝（写入时校验）。
+1. 把需求文档（Markdown 格式）放进 `docs/` 目录
+2. 跑 `node src/cli/decompose.mjs docs/你的需求.md` 拆解为任务
+3. 打开任务面板，查看自动生成的看板、依赖图
+4. 点击任务卡片开始执行，修改代码后通过面板更新状态
+5. 任务完成后流转到「待审查」，自动触发 AI 代码审查
+6. 审查通过，任务自动标记「已完成」
 
-## HTTP API
+---
 
-    GET  /api/tasks              任务列表
-    POST /api/tasks              创建任务
-    GET  /api/tasks/:id          单任务
-    PATCH /api/tasks/:id         更新任务字段（依赖成环会被拒绝）
-    DELETE /api/tasks/:id        删除任务
-    POST /api/tasks/:id/transition   状态流转 { to, reason? }（to=in_review 自动跑检查）
-    POST /api/tasks/:id/review       review { action: run_checks|approve|reject|force_approve }
-    POST /api/tasks/:id/comments     添加评论 { author?, content }（@用户名 提醒该负责人）
-    POST /api/tasks/:id/execute      AI 执行任务并回填会话/改动记录
-    GET  /api/tasks/:id/changes/:idx/diff   反查该条改动的完整 diff（含 commit diff）
-    GET  /api/impact/:id         影响分析（含 risk 风险排序 + regression 回归建议）
-    GET  /api/deps               依赖图数据（nodes/edges/layers）
-    GET  /api/validate           依赖校验（成环检测）
-    GET  /api/index              需求分组索引
-    GET/POST/PATCH/DELETE /api/requirements   需求管理（创建/编辑/删除/重命名）
-    POST /api/decompose          拆解 { docPath | text }
+## <a id="workflow"></a>工作流
 
-## 测试
+### 状态机
 
-    node --test
+```
+待办 (todo) → 进行中 (in_progress) → 待审查 (in_review) → 已完成 (done)
+                ↕                       ↕
+             阻塞 (blocked)          打回 (reject)
+```
 
-## 里程碑状态
+- **待办 → 进行中**：认领任务，开始实现
+- **进行中 → 待审查**：任务完成，提交审查（自动跑自动检查 + AI 审查）
+- **待审查 → 已完成**：审查通过（人工或 force_approve）
+- **任意状态 → 阻塞**：遇到阻碍，记录原因
+- **依赖成环**：写入时直接被拒绝，保证 DAG 完整性
 
-M1 骨架 / M2 数据层 / M3 拆解 / M4 面板 / M5 影响分析 / M6 Review —— 全部完成。
+### 完整开发流程
 
-## 在 opencode 中使用
+```
+需求文档 → decompose 拆解 → 任务列表 → 看板 / 依赖图 / 影响分析
+                                          ↓
+                              AI 执行 / 手动实现 → 代码改动
+                                          ↓
+                               Code Review（自动检查 + AI 审查 + 人工确认）
+                                          ↓
+                                       已完成
+```
 
-本项目已内置 opencode 集成（.opencode/ 目录）：
+---
 
-- 命令 /task-panel —— 打开任务面板
-- 命令 /decompose <文档路径> —— 拆解需求文档为任务
-- skill task-panel —— 让 agent 自动识别「打开面板 / 查看任务 / 拆解需求 / 影响分析 / code review」等意图
+## <a id="cli"></a>CLI 命令
 
-使用步骤：
+| 命令 | 功能 | 示例 |
+|------|------|------|
+| `vibe-task-panel` / `cli.mjs` | 统一入口 | `node src/cli/cli.mjs server` |
+| `decompose <doc>` | 拆解需求文档为任务 | `node src/cli/decompose.mjs docs/需求.md` |
+| `task-panel [port]` | 启动面板 + 打开浏览器 | `node src/cli/task-panel.mjs` |
+| `server [port]` | 仅启动服务，不开浏览器 | `node src/cli/cli.mjs server` |
 
-    cd vibe-task-panel
-    opencode
-    # 在 opencode 里输入 /task-panel 打开面板
-    # 或输入 /decompose docs/需求.md 拆解需求
-    # 或直接说「打开任务面板」，agent 会自动加载 skill
+```bash
+# 统一入口
+node src/cli/cli.mjs decompose docs/需求.md    # 拆解
+node src/cli/cli.mjs task-panel                  # 面板
+node src/cli/cli.mjs server                      # 仅服务
 
-全局使用（让任何项目都能用）：把 .opencode/ 下的内容复制到 ~/.config/opencode/。
+# 拆解支持 --llm 参数使用 AI 智能拆解
+node src/cli/decompose.mjs docs/需求.md --llm
+```
 
-    mkdir -p ~/.config/opencode
-    cp -r .opencode/skills ~/.config/opencode/
-    cp -r .opencode/command ~/.config/opencode/
+---
 
-## 安装与发布
+## <a id="api"></a>HTTP API
+
+服务启动后（默认 `http://127.0.0.1:4317`），提供以下 REST API：
+
+### 任务管理
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| `GET` | `/api/tasks` | 任务列表（支持 `?status=in_progress` 筛选） |
+| `POST` | `/api/tasks` | 创建任务 |
+| `GET` | `/api/tasks/:id` | 单任务详情 |
+| `PATCH` | `/api/tasks/:id` | 更新任务字段（依赖成环会被拒绝） |
+| `DELETE` | `/api/tasks/:id` | 删除任务 |
+
+### 状态流转
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| `POST` | `/api/tasks/:id/transition` | 状态流转 `{ to, reason? }` |
+| `POST` | `/api/tasks/:id/review` | 审查操作 `{ action: run_checks|approve|reject|force_approve }` |
+| `POST` | `/api/tasks/:id/execute` | AI 执行任务并回填会话/改动记录 |
+
+### 协作
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| `POST` | `/api/tasks/:id/comments` | 添加评论 `{ author?, content }`（`@用户名` 提醒该负责人） |
+
+### 分析
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| `GET` | `/api/impact/:id` | 影响分析（风险排序 + 回归建议） |
+| `GET` | `/api/deps` | 依赖图数据（nodes/edges/layers） |
+| `GET` | `/api/validate` | 依赖校验（成环检测） |
+| `GET` | `/api/tasks/:id/changes/:idx/diff` | 反查改动的完整 diff |
+
+### 需求管理
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| `GET` | `/api/requirements` | 需求列表 |
+| `POST` | `/api/requirements` | 创建需求 |
+| `PATCH` | `/api/requirements/:name` | 编辑需求 |
+| `DELETE` | `/api/requirements/:name` | 删除需求 |
+
+### 其他
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| `GET` | `/api/index` | 需求分组索引 |
+| `POST` | `/api/decompose` | 拆解 `{ docPath | text }` |
+
+---
+
+## <a id="mcp"></a>MCP Server（AI 直接操作面板）
+
+本仓库自带 stdio MCP Server，暴露 14 个 `vtp_*` 工具，让支持 MCP 的 AI 客户端（Claude Desktop、Cursor、opencode 等）**直接读取和操作任务面板**。
+
+### 注册配置
+
+```json
+{
+  "mcpServers": {
+    "vibe-task-panel": {
+      "command": "node",
+      "args": ["<绝对路径>/src/mcp/server.mjs"]
+    }
+  }
+}
+```
+
+> ⚠️ MCP Server 会在当前工作目录向上查找 git 根作为任务仓库，启动时请把工作目录设为你要管理的项目。
+
+### 工具列表
+
+| 工具 | 说明 |
+|------|------|
+| `vtp_list_tasks` | 列出当前项目当前分支的任务，可筛选状态 |
+| `vtp_transition` | 流转任务状态（todo/in_progress/in_review/done/blocked） |
+| `vtp_update_task` | 更新任务字段（files/changes/sessions/acceptance 等） |
+| `vtp_batch_start` | 批量认领任务（按顺序自动标记 in_progress） |
+| `vtp_batch_advance` | 完成当前任务，推进到下一个 |
+| `vtp_batch_complete` | 标记一批任务完成 |
+| `vtp_batch_review` | 批量流转到待审查 |
+| `vtp_add_session` | 添加会话记录（summary + decision） |
+| `vtp_sync_changes` | 自动收集未提交 git 改动写入任务 |
+| `vtp_impact` | 查看改动某任务会影响哪些下游任务 |
+| `vtp_review_checks` | AI 代码审查（基于实际代码，返回质量问题/学习点） |
+| `vtp_review_approve` | 审查通过任务（自动流转到已完成） |
+| `vtp_execute_task` | AI 执行任务并回填 sessions + changes |
+| `vtp_add_comment` | 添加评论（@用户名 提醒负责人） |
+
+### 配置 AI 供应商
+
+需要 AI 审查 / AI 执行时，在项目根放 `.env` 文件：
+
+```bash
+# 推荐：DeepSeek 云 API
+VTP_LLM=deepseek
+DEEPSEEK_API_KEY=sk-你的key
+
+# 或 OpenAI 兼容 API
+# VTP_LLM=openai
+# OPENAI_BASE_URL=https://api.openai.com/v1
+# OPENAI_API_KEY=sk-xxx
+# OPENAI_MODEL=gpt-4o-mini
+
+# 或本地 Ollama
+# VTP_LLM=ollama
+# OLLAMA_HOST=http://localhost:11434
+# OLLAMA_MODEL=模型名称
+```
+
+参照 `.env.example` 文件配置。
+
+---
+
+## <a id="opencode"></a>AI 集成（opencode）
+
+本项目已内置 [opencode](https://opencode.ai) 集成（`.opencode/` 目录），让 AI agent 能自动识别并操作任务面板。
+
+### 内置命令和 Skill
+
+| 方式 | 触发方式 | 说明 |
+|------|---------|------|
+| `/task-panel` | 在 opencode 输入 | 自动启动面板服务并打开浏览器 |
+| `/decompose <文档路径>` | 在 opencode 输入 | 拆解需求文档为任务 |
+| Skill `task-panel` | agent 自动加载 | 当用户说「打开面板」「查看任务」「拆解需求」「影响分析」「code review」时自动触发 |
+
+### 使用方式
+
+```bash
+# 在项目目录里
+cd vibe-task-panel
+opencode
+
+# 然后输入：
+/task-panel         # 打开面板
+/decompose 文档.md  # 拆解需求
+# 或直接说中文：
+"打开任务面板"
+"查看任务依赖关系"
+"帮我做 code review"
+```
+
+### 全局安装（让任意项目都能用）
+
+```bash
+# 方式一：一键安装脚本
+bash scripts/install-opencode.sh
+
+# 方式二：手动复制
+mkdir -p ~/.config/opencode
+cp -r .opencode/skills ~/.config/opencode/
+cp -r .opencode/command ~/.config/opencode/
+```
+
+安装后，在任意目录运行 opencode，`/task-panel` 和 `/decompose` 命令都可用。
+
+---
+
+## <a id="install"></a>安装方式
 
 ### 方式一：源码（GitHub）
 
-    git clone <你的仓库地址> vibe-task-panel
-    cd vibe-task-panel
-    node src/cli/task-panel.mjs        # 打开面板（零依赖，只需 Node >= 18）
+```bash
+git clone https://github.com/liulao-space/vibe-task-panel.git
+cd vibe-task-panel
+node src/cli/task-panel.mjs    # 零依赖，直接运行
+```
 
 ### 方式二：npm 全局安装
 
-    npm i -g vibe-task-panel
-    vibe-task-panel server             # 仅启动服务，浏览器访问 http://127.0.0.1:4317
-    vibe-task-panel decompose docs/需求.md   # 拆解需求
+```bash
+npm install -g vibe-task-panel
+# 或 npx
+npx vibe-task-panel server
 
-- 面板静态资源随包分发（按工具安装目录解析，全局安装同样可用）
-- 任务数据默认读写当前目录的 .vibe-task-panel/，用 VTP_ROOT 环境变量可指向任意项目
-- 端口默认 4317，VTP_PORT 可覆盖
+# 全局命令
+vibe-task-panel server              # 启动服务
+vibe-task-panel decompose docs/需求.md  # 拆解需求
+decompose docs/需求.md               # 或直接 decompose 命令
+task-panel                          # 或直接 task-panel 命令
+```
 
-### 方式三：让 opencode agent 全局可用
+- 面板静态资源随包分发，全局安装同样可用
+- 任务数据默认读写当前目录的 `.vibe-task-panel/`，用 `VTP_ROOT` 可指向任意项目
 
-一键把 skill + 命令装到 opencode 全局配置，任意项目里 agent 都能用：
+---
 
-    bash scripts/install-opencode.sh   # 等价于手动复制到 ~/.config/opencode/
+## 数据存储
 
-安装后在任意目录运行 opencode，输入 /task-panel 或 /decompose，或直接说「打开任务面板」。
+任务数据存于 `.vibe-task-panel/` 目录，采用**纯文件存储**（随代码进 Git，天然可追溯、可回看）。
 
-### 方式四：MCP server 接入（让 AI 直接操作面板）
+```
+.vibe-task-panel/
+├── tasks/
+│   ├── T-001.json       # 每个任务一个文件（权威数据）
+│   ├── T-002.json
+│   └── ...
+├── index.json            # 聚合索引
+└── requirements.json     # 需求清单
+```
 
-本仓库自带 stdio MCP server（src/mcp/server.mjs），暴露 14 个 vtp_* 工具：
-vtp_list_tasks / vtp_transition / vtp_update_task / vtp_batch_start / vtp_batch_advance /
-vtp_batch_complete / vtp_batch_review / vtp_add_session / vtp_sync_changes / vtp_impact /
-vtp_review_checks / vtp_review_approve / vtp_execute_task / vtp_add_comment。
+### 任务字段
 
-在支持 MCP 的客户端（Claude Desktop / Cursor / 支持 MCP 的编辑器等）中注册：
+| 字段 | 说明 |
+|------|------|
+| `id` | 任务 ID（如 T-001） |
+| `requirement` | 所属需求 |
+| `title` | 任务标题 |
+| `description` | 任务描述 |
+| `acceptance` | 验收标准 |
+| `status` | todo / in_progress / in_review / done / blocked |
+| `blocked_reason` | 阻塞原因 |
+| `depends_on` | 依赖的任务 ID 列表 |
+| `files` | 关联文件列表 |
+| `sessions` | 会话上下文（摘要、决策、时间戳） |
+| `changes` | 改动记录（diff、commit、说明） |
+| `assignee` | 负责人 |
+| `comments` | 评论 |
+| `notices` | 下游提醒 |
+| `review` | 审查结果（自动检查、AI 审查、人工确认） |
 
-    {
-      "mcpServers": {
-        "vibe-task-panel": {
-          "command": "node",
-          "args": ["<vibe-task-panel 绝对路径>/src/mcp/server.mjs"]
-        }
-      }
-    }
+---
 
-注意：
+## 目录结构
 
-1. MCP server 会在当前工作目录向上查找 git 根作为任务仓库根，启动时请把工作目录设为你要管理的项目；
-2. 需要 AI 审查 / AI 执行时，在项目根放 .env（参照 .env.example 填入 DEEPSEEK_API_KEY 或其它供应商 key）；
-3. opencode 等客户端的具体 mcp 配置字段见各自官方文档。
+```
+vibe-task-panel/
+├── src/
+│   ├── core/             核心逻辑（零依赖，纯函数）
+│   │   ├── store.mjs         任务读写 / 索引 / 需求分组 / 下游提醒
+│   │   ├── status.mjs        状态机（含 review 门禁约束）
+│   │   ├── deps.mjs          依赖校验 / 成环检测 / 拓扑排序
+│   │   ├── impact.mjs        影响分析（传递闭包 + 共享文件 + 风险排序）
+│   │   ├── review.mjs        Code Review 门禁（lint/typecheck/test + AI 审查）
+│   │   ├── execute.mjs       AI 执行任务并回填（多供应商）
+│   │   └── decompose.mjs     需求文档 → 任务（启发式，可插拔 LLM）
+│   ├── cli/              命令入口
+│   │   ├── cli.mjs           统一入口
+│   │   ├── decompose.mjs     拆解命令
+│   │   └── task-panel.mjs    面板命令
+│   ├── server/           HTTP API + 静态文件服务
+│   └── mcp/              MCP Server（AI 直连）
+├── web/
+│   └── index.html         前端面板（单文件，零依赖，SVG 依赖图）
+├── test/                 单元测试（node:test）
+├── specs/
+│   └── task-schema.json    任务数据契约
+├── .opencode/            opencode agent 集成（skill + 命令）
+└── docs/                 需求文档（拆解输入）
+```
+
+---
+
+## 测试
+
+```bash
+node --test
+```
+
+所有测试用例位于 `test/` 目录，使用 Node.js 内置 `node:test` 框架，无需额外依赖。当前 44 个测试全部通过。
+
+---
+
+## 配置
+
+| 环境变量 | 默认值 | 说明 |
+|----------|--------|------|
+| `VTP_PORT` | `4317` | HTTP 服务端口 |
+| `VTP_ROOT` | `process.cwd()` | 项目根目录（.vibe-task-panel 所在目录） |
+| `VTP_LLM` | — | AI 供应商：deepseek / openai / ollama |
+| `DEEPSEEK_API_KEY` | — | DeepSeek API Key |
+| `OPENAI_API_KEY` | — | OpenAI 兼容 API Key |
+| `OPENAI_BASE_URL` | — | OpenAI 兼容 API 地址 |
+| `OLLAMA_HOST` | — | Ollama 地址（默认 http://localhost:11434） |
+
+---
+
+## 技术栈
+
+- **运行时**：Node.js >= 18（零外部依赖）
+- **存储**：文件系统（JSON 文件，随代码进 Git）
+- **前端**：单文件 HTML/CSS/JS（无框架，SVG 依赖图）
+- **测试**：Node.js `node:test` 内置测试框架
+- **AI 接入**：多供应商（DeepSeek / OpenAI / Ollama），自动切换
+
+---
+
+## 里程碑
+
+| 阶段 | 状态 |
+|------|------|
+| M1 骨架 | ✅ 完成 |
+| M2 数据层（store/status/deps） | ✅ 完成 |
+| M3 拆解（decompose） | ✅ 完成 |
+| M4 面板（web UI + server） | ✅ 完成 |
+| M5 影响分析（impact） | ✅ 完成 |
+| M6 Code Review（review/execute） | ✅ 完成 |
+| M7 MCP Server | ✅ 完成 |
+| M8 opencode 集成 | ✅ 完成 |
+
+---
+
+## 许可证
+
+MIT License — 详见 [LICENSE](LICENSE) 文件。
