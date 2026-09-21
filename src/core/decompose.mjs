@@ -157,7 +157,9 @@ export function buildDecomposePrompt(text) {
     '   - UI 原型链接、设计稿引用、图片、截图、附件（如 .html 原型、js.design 链接）',
     '   - 角色与权限说明、背景描述、术语解释、全局约定、状态机定义表、枚举值说明',
     '   - 解析原理、提示词/Prompt、抽取纪律等文档性说明（这些是需求说明，不是开发任务）',
-    '3. 每项字段：id(如 T-001)、requirement(所属模块名)、title(简短动宾短语)、description(一句话)、acceptance(验收标准数组)、depends_on(依赖的任务id数组，无则空数组)',
+    '2.3 但图片引用不要丢弃：文档中出现的 UI 设计图（![说明](路径)、「见 image 8.png」、图片目录等）登记到所属任务的 attachments 数组，元素格式 {"path":"项目根相对路径","label":"简短说明","kind":"ui"}；模板/文档类附件 kind 用 "template"/"doc"',
+    '2.4 文档明确标注「无 UI 图 / UI 待补充 / 开发时补图」的任务，设 ui_status="pending"；其余任务不要输出 ui_status 字段',
+    '3. 每项字段：id(如 T-001)、requirement(所属模块名)、title(简短动宾短语)、description(一句话，可内嵌 ![说明](项目根相对路径) 引用关键 UI 图)、acceptance(验收标准数组)、depends_on(依赖的任务id数组，无则空数组)',
     '3.1 任务总数控制在 20~50 个（模块多可到 60），同一模块下 3~15 个任务为宜；不要过度细分，避免把一个功能拆成碎片任务',
     '4. depends_on 表示本任务依赖谁，保持无环；id 按依赖顺序 T-001、T-002 递增',
     '5. 只输出 JSON 数组，不要任何解释、不要 markdown 代码块',
@@ -185,6 +187,7 @@ export function parseLLMTasks(raw) {
 export async function decomposeWithLLM(text, llmFn) {
   const raw = await llmFn(buildDecomposePrompt(text));
   const tasks = parseLLMTasks(raw);
+  const KINDS = ['ui', 'doc', 'template', 'note'];
   for (let i = 0; i < tasks.length; i++) {
     const t = tasks[i];
     if (!t.id) t.id = 'T-' + String(i + 1).padStart(3, '0');
@@ -192,6 +195,18 @@ export async function decomposeWithLLM(text, llmFn) {
     if (!t.description) t.description = '';
     if (!t.acceptance) t.acceptance = [];
     if (!t.depends_on) t.depends_on = [];
+    // attachments 归一化：仅保留 {path,label,kind}，path 必填（项目根相对路径）
+    t.attachments = Array.isArray(t.attachments)
+      ? t.attachments
+          .filter((a) => a && typeof a.path === 'string' && a.path.trim())
+          .map((a) => ({
+            path: a.path.trim(),
+            label: typeof a.label === 'string' ? a.label : '',
+            kind: KINDS.indexOf(a.kind) >= 0 ? a.kind : 'ui'
+          }))
+      : [];
+    // ui_status 归一化：仅接受 ready/pending，其余视为 null
+    t.ui_status = (t.ui_status === 'ready' || t.ui_status === 'pending') ? t.ui_status : null;
   }
   return tasks;
 }

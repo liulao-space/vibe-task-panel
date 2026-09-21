@@ -94,6 +94,47 @@ export function createServer(root, opts) {
     }
   }
 
+  // 任务附件可访问的图片类型白名单
+  const IMG_TYPES = {
+    '.png': 'image/png',
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.webp': 'image/webp',
+    '.gif': 'image/gif',
+    '.svg': 'image/svg+xml',
+    '.ico': 'image/x-icon'
+  };
+
+  // 提供项目根内的图片/附件（/files/<项目根相对路径>）：
+  // 1) 显式拒绝绝对路径与空字节；2) resolve 后必须落在项目根内，拒绝 ../；3) 仅白名单 mime。
+  async function serveProjectFile(res, rel) {
+    let decoded = rel;
+    try { decoded = decodeURIComponent(rel); } catch (e) { /* 非法编码按原样处理 */ }
+    if (path.isAbsolute(decoded) || decoded.indexOf('\0') >= 0) {
+      res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
+      return res.end('Forbidden');
+    }
+    const abs = path.resolve(root, decoded);
+    const rootPrefix = path.resolve(root) + path.sep;
+    if (abs !== rootPrefix.slice(0, -1) && !abs.startsWith(rootPrefix)) {
+      res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
+      return res.end('Forbidden');
+    }
+    const ext = path.extname(abs).toLowerCase();
+    if (!IMG_TYPES[ext]) {
+      res.writeHead(415, { 'Content-Type': 'text/plain; charset=utf-8' });
+      return res.end('Unsupported Media Type');
+    }
+    try {
+      const data = await fs.readFile(abs);
+      res.writeHead(200, { 'Content-Type': IMG_TYPES[ext] });
+      res.end(data);
+    } catch (err) {
+      res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+      res.end('Not Found');
+    }
+  }
+
   async function handleApi(req, res, method, p, u) {
     const seg = p.split('/').filter(Boolean);
     const kind = seg[1];
@@ -182,16 +223,29 @@ export function createServer(root, opts) {
       const notesDir = path.join(root, '.vibe-task-panel', 'notes');
       try { await fs.mkdir(notesDir, { recursive: true }); } catch (e) { /* 目录已存在 */ }
       const safe = String(body.taskId || 'note').replace(/[^\w-]/g, '_');
-      const ext = body.format === 'png' ? 'png' : 'svg';
+      const fmt = String(body.format || 'png').toLowerCase();
+      const ext = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'svg'].indexOf(fmt) >= 0 ? fmt : 'png';
       const name = safe + '-' + new Date().toISOString().replace(/[:.]/g, '-') + '.' + ext;
       const file = path.join(notesDir, name);
       try {
-        if (ext === 'png') await fs.writeFile(file, Buffer.from(String(body.data || ''), 'base64'));
-        else await fs.writeFile(file, String(body.data || ''), 'utf8');
+        if (ext === 'svg') await fs.writeFile(file, String(body.data || ''), 'utf8');
+        else await fs.writeFile(file, Buffer.from(String(body.data || ''), 'base64'));
       } catch (err) {
         return send(res, 400, { error: '保存图片失败: ' + err.message });
       }
-      return send(res, 200, { path: file, file: name });
+      return send(res, 200, { path: file, file: name, relPath: '.vibe-task-panel/notes/' + name });
+    }
+    if (kind === 'notes' && method === 'DELETE') {
+      // 仅允许删除面板上传目录内的文件：文件名白名单（无路径分隔符），防穿越
+      const name = u.searchParams.get('file') || '';
+      if (!/^[\w][\w.-]*$/.test(name)) return send(res, 400, { error: '非法文件名' });
+      const notesDir = path.join(root, '.vibe-task-panel', 'notes');
+      const file = path.join(notesDir, name);
+      if (!file.startsWith(notesDir + path.sep)) return send(res, 400, { error: '非法文件名' });
+      try { await fs.unlink(file); } catch (err) {
+        return send(res, 404, { error: '文件不存在: ' + name });
+      }
+      return send(res, 200, { ok: true, file: name });
     }
     if (kind === 'validate' && method === 'GET') {
       const tasks = await loadAllTasks(root);
@@ -457,6 +511,9 @@ export function createServer(root, opts) {
     try {
       if (p === '/' || p === '/index.html') {
         return await serveStatic(res, 'index.html');
+      }
+      if (p.startsWith('/files/')) {
+        return await serveProjectFile(res, p.slice('/files/'.length));
       }
       if (p.startsWith('/api/')) {
         return await handleApi(req, res, method, p, u);

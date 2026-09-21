@@ -167,12 +167,28 @@ node src/cli/decompose.mjs docs/需求.md --llm
 |------|------|------|
 | `GET` | `/api/index` | 需求分组索引 |
 | `POST` | `/api/decompose` | 拆解 `{ docPath | text }` |
+| `GET` | `/files/<项目根相对路径>` | 访问任务附件图片（仅 png/jpg/jpeg/webp/gif/svg；沙箱限制在项目根内，拒绝路径穿越） |
+
+### UI 图 / 附件（schema v2）
+
+任务新增两个字段：
+
+- `attachments`: `[{ path, label?, kind? }]` —— `path` 为**项目根相对路径**（随 git 走），`kind` 取 `ui | doc | template | note`
+- `ui_status`: `ready | pending | null` —— `pending` 表示缺 UI 图，看板卡片挂「⚠️ 缺UI图」徽标
+
+面板交互：任务详情「UI 图 / 附件」区块渲染缩略图墙（点击放大，hover 缩略图出现 × 删除——统一走自定义确认弹窗，仅移除登记、不删仓库文件）；支持「登记仓库图片」与「上传图片」（上传存 `.vibe-task-panel/notes/` 并自动登记）；任务描述支持 `![说明](项目根相对路径)` 内嵌图片语法。
+
+存量任务回填：
+
+    node scripts/backfill-attachments.mjs <项目根> [--apply]
+
+（扫描任务 description 中提到的图片文件名自动登记 attachments；命中「无 UI 图/待补充」文案置 `ui_status=pending`；默认 dry run）
 
 ---
 
 ## <a id="mcp"></a>MCP Server（AI 直接操作面板）
 
-本仓库自带 stdio MCP Server，暴露 14 个 `vtp_*` 工具，让支持 MCP 的 AI 客户端（Claude Desktop、Cursor、opencode 等）**直接读取和操作任务面板**。
+本仓库自带 stdio MCP Server，暴露 15 个 `vtp_*` 工具，让支持 MCP 的 AI 客户端（Claude Desktop、Cursor、opencode 等）**直接读取和操作任务面板**。
 
 ### 注册配置
 
@@ -194,8 +210,9 @@ node src/cli/decompose.mjs docs/需求.md --llm
 | 工具 | 说明 |
 |------|------|
 | `vtp_list_tasks` | 列出当前项目当前分支的任务，可筛选状态 |
+| `vtp_create_task` | 创建任务（单个 task 或 tasks 批量），自动绑定当前分支；支持 attachments/ui_status |
 | `vtp_transition` | 流转任务状态（todo/in_progress/in_review/done/blocked） |
-| `vtp_update_task` | 更新任务字段（files/changes/sessions/acceptance 等） |
+| `vtp_update_task` | 更新任务字段（files/attachments/ui_status/sessions/changes/acceptance 等） |
 | `vtp_batch_start` | 批量认领任务（按顺序自动标记 in_progress） |
 | `vtp_batch_advance` | 完成当前任务，推进到下一个 |
 | `vtp_batch_complete` | 标记一批任务完成 |

@@ -11,8 +11,8 @@
   "properties": {
     "schema_version": {
       "type": "integer",
-      "default": 1,
-      "description": "存储格式版本，便于演进"
+      "default": 2,
+      "description": "存储格式版本，便于演进（v2 新增 attachments/ui_status）"
     },
     "id": {
       "type": "string",
@@ -68,6 +68,37 @@
       },
       "default": [],
       "description": "关联文件路径"
+    },
+    "attachments": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "required": ["path"],
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "图片/附件路径，相对项目根（随 git 走）；面板通过 /files/<path> 访问"
+          },
+          "label": {
+            "type": "string",
+            "description": "附件说明，如「术语列表页 UI」"
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["ui", "doc", "template", "note"],
+            "default": "ui",
+            "description": "ui=设计图 doc=文档 template=模板文件 note=面板内上传"
+          }
+        }
+      },
+      "description": "任务关联的图片/附件（UI 设计图等），任务详情渲染缩略图墙"
+    },
+    "ui_status": {
+      "type": ["string", "null"],
+      "enum": ["ready", "pending", null],
+      "default": null,
+      "description": "UI 图状态：pending=缺 UI 图（看板挂「⚠️ 缺UI图」徽标），ready=已有 UI 图，null=不涉及 UI"
     },
     "assignee": {
       "type": ["string", "null"],

@@ -367,6 +367,20 @@ html[data-theme="light"] .graph-legend{background:rgba(255,255,255,.9)}
 .kv .v{font-size:12.5px;display:flex;align-items:center;gap:6px}
 .prose{font-size:13px;line-height:1.72;color:var(--text-2)}
 .prose strong{color:var(--text);font-weight:600}
+.prose .desc-img{display:block;max-width:100%;max-height:260px;margin:8px 0;border:1px solid var(--border);border-radius:8px;cursor:zoom-out}
+.att-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.att{margin:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--panel);position:relative}
+.att img{display:block;width:100%;height:96px;object-fit:cover;cursor:zoom-out;background:var(--panel-2)}
+.att-del{position:absolute;top:4px;right:4px;width:18px;height:18px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.55);color:#fff;font-size:12px;line-height:16px;padding:0;cursor:pointer;opacity:0;transition:opacity .12s;z-index:2}
+.att:hover .att-del{opacity:1}
+.att-del:hover{background:var(--danger,#d9534f)}
+.att figcaption{display:flex;align-items:center;gap:5px;padding:5px 7px;font-size:10.5px;color:var(--text-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.att .kind{margin-left:auto;flex:none;font-size:9px;padding:1px 5px;border:1px solid var(--border);border-radius:6px;text-transform:uppercase}
+.tag.uipend{color:var(--review);border-color:rgba(229,178,60,.4)}
+.badge.uipend{color:var(--review);border-color:rgba(229,178,60,.4)}
+.badge.uiready{color:var(--done);border-color:rgba(63,193,169,.4)}
+#lightbox{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:999;display:flex;align-items:center;justify-content:center;cursor:zoom-out}
+#lightbox img{max-width:92vw;max-height:92vh;border-radius:8px;box-shadow:0 12px 48px rgba(0,0,0,.5)}
 .acc-list{list-style:none;display:flex;flex-direction:column;gap:6px}
 .acc-list li{display:flex;gap:9px;align-items:flex-start;background:var(--panel);border:1px solid var(--border);
   border-radius:var(--r-sm);padding:7px 10px;font-size:12.5px;line-height:1.5}
@@ -553,6 +567,22 @@ html[data-theme="light"] .dl-line.del{color:#a02328}
 .mbody{padding:16px 18px;overflow-y:auto;flex:1}
 .mfoot{padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;background:var(--panel)}
 .mfoot .sp{flex:1}
+/* 紧凑确认弹窗（删除附件等） */
+.mbox.confirm{width:min(380px,92vw)}
+.mbox.confirm .mhead,.mbox.confirm .mbody,.mbox.confirm .mfoot{display:none}
+.mbox.confirm .cwrap{display:flex;flex-direction:column}
+.cwrap .cbody{padding:24px 24px 14px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:11px}
+.cicon{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:21px;
+  background:rgba(242,85,90,.12);color:var(--block);border:1px solid rgba(242,85,90,.28)}
+.cwrap h3{margin:0;font-size:15px;font-weight:620;color:var(--text)}
+.cmsg{font-size:12.5px;line-height:1.7;color:var(--text-2);white-space:pre-wrap}
+.cchip{font-family:var(--mono);font-size:11px;color:var(--text);background:var(--panel);border:1px solid var(--border);
+  border-radius:6px;padding:3px 9px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cwrap .cfoot{display:flex;gap:9px;width:100%;padding:8px 24px 22px}
+.cwrap .cfoot .btn{flex:1;justify-content:center;padding:8px 12px;font-size:12.5px;border-radius:8px}
+.btn.danger-solid{background:linear-gradient(180deg,#e5565b,#c93a40);border-color:#b03136;color:#fff;font-weight:550;
+  box-shadow:0 2px 10px -2px rgba(229,86,91,.5)}
+.btn.danger-solid:hover{background:linear-gradient(180deg,#ef656a,#d6474d);border-color:#b03136;color:#fff}
 .field{margin-bottom:13px}
 .field label{display:block;font-size:11.5px;color:var(--text-2);margin-bottom:5px;font-weight:550}
 .field input,.field select,.field textarea{
@@ -751,6 +781,8 @@ button .ic-svg,.btn .ic-svg{margin-right:5px;vertical-align:-2px}
     <div class="content" id="content"></div>
   </div>
 </div>
+
+<div id="lightbox" class="hidden" onclick="closeLightbox()"><img id="lightbox-img" src="" alt="预览"/></div>
 
 <!-- ============ DRAWER ============ -->
 <div class="drawer hidden" id="drawer">
@@ -1156,6 +1188,8 @@ function cardHTML(t){
     '<div class="card-tags">'+
       '<span class="tag req" style="color:'+reqColor(t.requirement)+';border-color:'+reqColor(t.requirement)+'33">'+esc(t.requirement||'未分类')+'</span>'+
       ((t.files||[]).length?'<span class="tag">'+(t.files||[]).length+' 文件</span>':'')+
+      ((t.attachments||[]).length?'<span class="tag" title="UI 图/附件">🖼 '+(t.attachments||[]).length+'</span>':'')+
+      (t.ui_status==='pending'?'<span class="tag uipend" title="UI 图待补充">⚠️ 缺UI图</span>':'')+
     '</div>'+
     '<div class="card-foot">'+
       '<span class="m" title="依赖数">⇠ '+deps+'</span>'+
@@ -1234,7 +1268,10 @@ function renderList(){
                  : '<span class="pend">—</span>';
         return '<div class="trow" data-id="'+t.id+'">'+
           '<span class="tid">'+t.id+'</span>'+
-          '<span class="ttitle">'+esc(t.title)+'</span>'+
+          '<span class="ttitle">'+esc(t.title)+
+            ((t.attachments||[]).length?' <span class="tag" title="UI 图/附件">🖼'+(t.attachments||[]).length+'</span>':'')+
+            (t.ui_status==='pending'?' <span class="tag uipend" title="UI 图待补充">⚠️缺UI图</span>':'')+
+          '</span>'+
           '<span class="badge" style="color:'+st.color+';border-color:'+st.color+'44"><span class="sw" style="background:'+st.color+'"></span>'+st.label+'</span>'+
           '<span>'+((t.depends_on||[]).map(d=>'<span class="dep-chip">'+esc(d)+'</span>').join('')||'<span class="muted" style="font-size:11px">—</span>')+'</span>'+
           '<span class="file-chip" title="'+esc((t.files||[]).join(String.fromCharCode(10)))+'">'+esc((t.files||[])[0]||'—')+((t.files||[]).length>1?' +'+(t.files.length-1):'')+'</span>'+
@@ -1448,6 +1485,9 @@ function renderDetail(t){
   meta += t.assignee?'<span class="badge"><span class="avatar" style="width:15px;height:15px;font-size:8.5px;background:'+avColor(t.assignee)+'">'+initial(t.assignee)+'</span>'+esc(t.assignee)+'</span>':'<span class="badge muted">未指派</span>';
   meta += '<span class="badge">⇠ 依赖 '+(t.depends_on||[]).length+'</span>';
   meta += '<span class="badge" style="'+(im.items.length>2?'color:var(--review);border-color:rgba(229,178,60,.35)':'')+'">⇢ 影响 '+im.items.length+'</span>';
+  if((t.attachments||[]).length) meta += '<span class="badge" title="UI 图/附件">🖼 '+(t.attachments||[]).length+'</span>';
+  if(t.ui_status==='pending') meta += '<span class="badge uipend" title="UI 图待补充">⚠️ 缺UI图</span>';
+  else if(t.ui_status==='ready') meta += '<span class="badge uiready" title="UI 图已就绪">UI 图就绪</span>';
   meta += '<span class="badge mono" style="font-size:10.5px">schema v'+(t.schema_version||1)+'</span>';
   meta += '<span style="margin-left:auto;display:flex;gap:6px">'+
     '<button class="btn sm" onclick="aiExecute(&#39;'+t.id+'&#39;)">'+ic('bot')+'AI 执行</button>'+
@@ -1510,6 +1550,12 @@ function wireDetailEvents(t){
   const btnRunAI=$('#btn-run-ai'); if(btnRunAI) btnRunAI.onclick=()=>runReview(t.id,'run_checks');
   const btnReanalyze=$('#btn-reanalyze'); if(btnReanalyze) btnReanalyze.onclick=()=>reanalyze(t.id);
   const btnMarkRead=$('#btn-mark-read'); if(btnMarkRead) btnMarkRead.onclick=()=>markTaskNoticesRead(t.id);
+  const btnToggleUi=$('#btn-toggle-ui'); if(btnToggleUi) btnToggleUi.onclick=()=>toggleUiStatus(t);
+  const btnAddAtt=$('#btn-add-attachment'); if(btnAddAtt) btnAddAtt.onclick=()=>addAttachment(t);
+  const btnUploadAtt=$('#btn-upload-attachment'); if(btnUploadAtt) btnUploadAtt.onclick=()=>uploadAttachment(t);
+  body.querySelectorAll('.att-del').forEach(b=>{
+    b.onclick=e=>{ e.stopPropagation(); deleteAttachment(t, Number(b.getAttribute('data-idx'))); };
+  });
 }
 
 /* ---------- 概览 ---------- */
@@ -1551,7 +1597,25 @@ function tabOverview(t){
   if(t.status==='in_review') html+='<div class="hint">'+ic('lock',11)+' 「已完成」需 Review verdict = passed。当前：<b>'+(t.review&&t.review.verdict==='passed'?'已通过':'待确认')+'</b></div>';
   html+='</div>';
 
-  html+='<div class="sec"><h3>描述 <span class="line"></span></h3><p class="prose">'+(esc(t.description)||'<span class="muted">—</span>')+'</p></div>';
+  html+='<div class="sec"><h3>描述 <span class="line"></span></h3><p class="prose">'+(descHTML(t.description)||'<span class="muted">—</span>')+'</p></div>';
+
+  const atts=(t.attachments||[]);
+  if(atts.length || t.ui_status==='pending'){
+    html+='<div class="sec"><h3>'+ic('image',12)+' UI 图 / 附件 <span class="line"></span>'+
+      '<span style="display:flex;gap:6px;margin-left:auto">'+
+      '<button class="btn sm" id="btn-add-attachment">登记仓库图片</button>'+
+      '<button class="btn sm" id="btn-upload-attachment">上传图片</button>'+
+      '<button class="btn sm" id="btn-toggle-ui">'+(t.ui_status==='pending'?'标记已补图':'标记缺图')+'</button>'+
+      '</span></h3>';
+    if(t.ui_status==='pending') html+='<div class="hint" style="color:var(--review)">⚠️ 该任务缺 UI 图，看板卡片会挂「缺UI图」徽标；补图后点「标记已补图」。</div>';
+    html+='<div class="att-grid">'+atts.map(function(a,i){
+      const src=fileUrl(a.path);
+      return '<figure class="att"><img src="'+src+'" loading="lazy" alt="'+esc(a.label||a.path)+'" onclick="openLightbox(&#39;'+src+'&#39;)"/>'+
+        '<button class="att-del" data-idx="'+i+'" title="删除此附件（仅移除登记，不删仓库文件）">×</button>'+
+        '<figcaption title="'+esc(a.label||a.path)+'">'+esc(a.label||a.path)+'<span class="kind">'+esc(a.kind||'ui')+'</span></figcaption></figure>';
+    }).join('')+'</div>';
+    html+='</div>';
+  }
 
   html+='<div class="sec"><h3>验收标准 <span class="line"></span><button class="btn sm" id="btn-edit-acceptance">'+ic('pencil')+'编辑</button></h3>';
   html+='<ul class="acc-list">'+((t.acceptance||[]).map((a,i)=>{
@@ -2081,6 +2145,83 @@ async function addComment(id){
   }catch(e){ toast(e.message,'err'); }
 }
 
+/* ---------- 附件 / UI 图（schema v2） ---------- */
+function encPath(p){ return String(p||'').split('/').map(encodeURIComponent).join('/'); }
+function fileUrl(p){ return '/files/' + encPath(p); }
+// 描述内 ![label](项目根相对路径) 渲染为图片（先 esc 防 XSS，再替换白名单路由）
+function descHTML(text){
+  let h = esc(text||'');
+  h = h.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, function(m, label, p){
+    const src = fileUrl(p.trim());
+    return '<img class="desc-img" src="'+src+'" alt="'+label+'" loading="lazy" onclick="openLightbox(&#39;'+src+'&#39;)"/>';
+  });
+  return h;
+}
+function openLightbox(src){ $('#lightbox-img').src=src; $('#lightbox').classList.remove('hidden'); }
+function closeLightbox(){ $('#lightbox').classList.add('hidden'); $('#lightbox-img').src=''; }
+async function patchTaskRefresh(id, patch, msg){
+  try{
+    const nt = await api('/api/tasks/'+id, {method:'PATCH', body:patch});
+    taskCache[id]=nt;
+    toast(msg,'ok');
+    renderDetail(nt);
+    await refreshAll(); render();
+  }catch(e){ toast(e.message,'err'); }
+}
+function toggleUiStatus(t){
+  const next = t.ui_status==='pending' ? 'ready' : 'pending';
+  patchTaskRefresh(t.id, {ui_status: next}, next==='pending' ? '已标记「缺UI图」' : 'UI 图状态已更新为 ready');
+}
+async function addAttachment(t){
+  const p = prompt('图片路径（项目根相对路径）：\n例：docs/术语库/图片和附件/image 8.png');
+  if(!p || !p.trim()) return;
+  const label = prompt('图片说明（可空）：') || '';
+  try{
+    const cur = await api('/api/tasks/'+t.id);
+    const atts = (cur.attachments||[]).slice();
+    atts.push({ path: p.trim(), label: label.trim(), kind: 'ui' });
+    patchTaskRefresh(t.id, {attachments: atts, ui_status: cur.ui_status==='pending' ? 'ready' : cur.ui_status}, '已登记图片');
+  }catch(e){ toast(e.message,'err'); }
+}
+function uploadAttachment(t){
+  const inp=document.createElement('input');
+  inp.type='file';
+  inp.accept='image/png,image/jpeg,image/webp,image/gif,image/svg+xml';
+  inp.onchange=async()=>{
+    const f=inp.files[0]; if(!f) return;
+    const extMap={'image/png':'png','image/jpeg':'jpeg','image/webp':'webp','image/gif':'gif','image/svg+xml':'svg'};
+    const fmt=extMap[f.type]||'png';
+    const reader=new FileReader();
+    reader.onload=async()=>{
+      try{
+        const dataUrl=String(reader.result||'');
+        const base64=dataUrl.split(',')[1]||'';
+        const r=await api('/api/notes',{method:'POST',body:{taskId:t.id,format:fmt,data:base64}});
+        const cur=await api('/api/tasks/'+t.id);
+        const atts=(cur.attachments||[]).slice();
+        atts.push({path:r.relPath,label:f.name,kind:'note'});
+        patchTaskRefresh(t.id,{attachments:atts,ui_status:cur.ui_status==='pending'?'ready':cur.ui_status},'已上传并登记图片');
+      }catch(e){ toast(e.message,'err'); }
+    };
+    reader.readAsDataURL(f);
+  };
+  inp.click();
+}
+function deleteAttachment(t, idx){
+  const a = (t.attachments||[])[idx];
+  if(!a) return;
+  // 先弹自定义确认框（同步弹出，不依赖 user activation），确认后再发请求
+  showConfirmDialog('删除附件', '该附件将从任务中移除，可随时重新登记。', async function(){
+    try{
+      const cur = await api('/api/tasks/'+t.id);
+      const list = (cur.attachments||[]).slice();
+      if(!list[idx]){ toast('附件列表已变化，请重试','err'); renderDetail(cur); return; }
+      list.splice(idx,1);
+      patchTaskRefresh(t.id, {attachments: list}, '已删除附件');
+    }catch(e){ toast(e.message,'err'); }
+  }, { chip: (a.label||a.path) });
+}
+
 async function appendContext(id){
   const el=$('#ctx-input'); const v=el?el.value.trim():'';
   if(!v){ toast('内容为空','err'); return; }
@@ -2116,6 +2257,28 @@ function showModal(html,wide){
   $('#mbox').className='mbox'+(wide?' wide':'');
   $('#mbox').innerHTML=html;
   $('#modal').classList.remove('hidden');
+}
+// 自定义确认弹窗（替代原生 confirm）：紧凑居中卡片，Esc/取消/点遮罩均为取消
+function showConfirmDialog(title, message, onOk, opts){
+  opts = opts || {};
+  const danger = opts.danger !== false;
+  let html='<div class="cwrap">'+
+    '<div class="cbody">'+
+      '<div class="cicon"'+(danger?'':' style="color:var(--accent);background:rgba(63,193,169,.12);border-color:rgba(63,193,169,.3)"')+'>'+
+        (danger?'🗑':'?')+
+      '</div>'+
+      '<h3>'+esc(title)+'</h3>'+
+      '<div class="cmsg">'+esc(message)+'</div>'+
+      (opts.chip?'<div class="cchip" title="'+esc(opts.chip)+'">'+esc(opts.chip)+'</div>':'')+
+    '</div>'+
+    '<div class="cfoot">'+
+      '<button class="btn" onclick="closeModal()">取消</button>'+
+      '<button class="btn '+(danger?'danger-solid':'primary')+'" id="confirm-ok">'+esc(opts.okText||(danger?'确定删除':'确定'))+'</button>'+
+    '</div>'+
+  '</div>';
+  showModal(html);
+  $('#mbox').classList.add('confirm');
+  $('#confirm-ok').onclick=function(){ closeModal(); if(onOk) onOk(); };
 }
 
 /* ---------- 拆解需求（真实 /api/decompose） ---------- */
@@ -2929,6 +3092,7 @@ document.addEventListener('keydown',e=>{
   const typing=/INPUT|TEXTAREA|SELECT/.test((document.activeElement&&document.activeElement.tagName)||'');
   if((e.metaKey||e.ctrlKey)&&e.key==='k'){ e.preventDefault(); toggleCmdk(); return; }
   if(e.key==='Escape'){ toggleCmdk(false); closeModal();
+    if(!$('#lightbox').classList.contains('hidden')){ closeLightbox(); return; }
     if(!$('#drawer').classList.contains('hidden')) closeDrawer(); return; }
   if(typing) return;
   if(e.key==='/'){ e.preventDefault(); $('#q').focus(); }

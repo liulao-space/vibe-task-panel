@@ -52,7 +52,7 @@ export async function loadAllTasks(root) {
 
 export function defaultTask(partial) {
   return {
-    schema_version: 1,
+    schema_version: 2,
     id: partial.id,
     branch: partial.branch || 'default',
     requirement: partial.requirement || '未分类',
@@ -63,6 +63,8 @@ export function defaultTask(partial) {
     blocked_reason: partial.blocked_reason || null,
     depends_on: partial.depends_on || [],
     files: partial.files || [],
+    attachments: partial.attachments || [],
+    ui_status: partial.ui_status === undefined ? null : partial.ui_status,
     sessions: partial.sessions || [],
     changes: partial.changes || [],
     assignee: partial.assignee || null,

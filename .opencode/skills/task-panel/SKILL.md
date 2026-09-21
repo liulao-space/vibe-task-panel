@@ -38,6 +38,10 @@ metadata:
 
     node --test
 
+回填任务附件（扫描 description 中的图片名自动登记 attachments，缺图文案置 ui_status=pending；默认 dry run）：
+
+    node scripts/backfill-attachments.mjs [项目根] [--apply]
+
 ## 面板能力
 
 - 看板 / 列表 / 依赖图三种视图
@@ -48,11 +52,14 @@ metadata:
 - Code Review：进入待审查自动跑 lint/typecheck/test，每任务必经自动检查 + AI 审查 + 人工确认，未通过无法「已完成」
 - AI 执行：调用 AI（多供应商自动切换）执行任务并回填会话/改动记录
 - 协作：任务指派、评论、@ 提醒；上游任务变更自动提醒下游
+- UI 图/附件：任务可挂 attachments（仓库相对路径图片或面板上传），详情渲染缩略图墙 + 点击放大；描述内支持 ![说明](项目根相对路径) 图片语法；ui_status=pending 时卡片挂「⚠️ 缺UI图」徽标
+- MCP：opencode 内可用 vtp_* 工具直接操作（含 vtp_create_task 创建任务落盘）
 
 ## 数据
 
 任务数据存于 .vibe-task-panel/tasks/ 目录（每个任务一个 JSON 文件 + index.json 索引 + requirements.json 需求清单），随代码进 Git。
-任务字段：id、requirement、title、acceptance、status、depends_on、files、sessions（会话上下文）、changes（改动记录）、assignee（负责人）、comments（评论）、notices（下游提醒）、review（审查门禁）。
+任务字段：id、requirement、title、acceptance、status、depends_on、files、attachments（UI图/附件 [{path,label,kind}]）、ui_status（ready/pending，pending=缺UI图）、sessions（会话上下文）、changes（改动记录）、assignee（负责人）、comments（评论）、notices（下游提醒）、review（审查门禁）。
+图片访问路由：GET /files/<项目根相对路径>（仅 png/jpg/jpeg/webp/gif/svg，沙箱限制在项目根内）。
 
 ## 与面板协作的约定
 
