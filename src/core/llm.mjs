@@ -150,11 +150,11 @@ export async function callOpenAI(prompt, cfg, systemPrompt) {
           { role: 'user', content: prompt }
         ],
         temperature: 0.2,
-        max_tokens: 8192
+        max_tokens: 16384
       })
-    }, 60000);
+    }, 180000);
   } catch (e) {
-    const hint = (e && e.name === 'AbortError') ? '请求超时（60秒无响应）' : ('网络错误: ' + String((e && e.message) || e));
+    const hint = (e && e.name === 'AbortError') ? '请求超时（180秒无响应）' : ('网络错误: ' + String((e && e.message) || e));
     throw new Error('provider[' + cfg.openaiBase + '] ' + hint + ' —— 请检查该 provider 的网络可达性或切换其它 provider');
   }
   if (!res.ok) {
